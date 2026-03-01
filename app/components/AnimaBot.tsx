@@ -1,7 +1,8 @@
 'use client';
 
 import Lottie from 'lottie-react';
-import animaBot from '@/public/animations/AnimaBot.json';
+
+import animaBot from '@/public/animations/AnimaBot.json'
 
 type AnimaBotProps = {
   width?: number;
@@ -20,6 +21,7 @@ export default function Animabot({
         animationData={animaBot}
         loop={loop}
         autoplay
+        
       />
     </div>
   );
