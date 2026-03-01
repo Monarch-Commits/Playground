@@ -23,22 +23,24 @@ export default function ChatBox() {
     { role: 'ai', content: "Hello! I'm your AI assistant. How can I help you today?" },
   ]);
   const [input, setInput] = useState('');
-  const [isPending, setIsPending] = useState(false);
+  const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Auto scroll sa latest message
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isPending]);
+  }, [messages, loading]);
 
+  // Simplified send function
   const handleSend = async () => {
-    if (!input.trim() || isPending) return;
+    if (!input.trim() || loading) return;
 
     const userMsg: ChatMessage = { role: 'user', content: input };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
-    setIsPending(true);
+    setLoading(true);
 
     try {
       const formData = new FormData();
@@ -56,10 +58,10 @@ export default function ChatBox() {
       console.error(err);
       setMessages(prev => [
         ...prev,
-        { role: 'ai', content: 'Error calling Gemini AI.' },
+        { role: 'ai', content: 'Error calling AI. Please try again.' },
       ]);
     } finally {
-      setIsPending(false);
+      setLoading(false);
     }
   };
 
@@ -104,9 +106,7 @@ export default function ChatBox() {
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex ${
-                  msg.role === 'user' ? 'justify-end' : 'justify-start'
-                } items-end gap-2`}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} items-end gap-2`}
               >
                 {msg.role === 'ai' && (
                   <div className="w-8 h-8 rounded-full bg-[#EBD1C5] flex items-center justify-center">
@@ -114,13 +114,11 @@ export default function ChatBox() {
                   </div>
                 )}
 
-                <div
-                  className={`px-5 py-3.5 rounded-[1.5rem] text-sm max-w-[80%] leading-relaxed ${
-                    msg.role === 'user'
-                      ? 'bg-[#452829] text-[#F3E8DF] rounded-br-none'
-                      : 'bg-white text-[#452829] rounded-bl-none border border-black/5'
-                  }`}
-                >
+                <div className={`px-5 py-3.5 rounded-[1.5rem] text-sm max-w-[80%] leading-relaxed ${
+                  msg.role === 'user'
+                    ? 'bg-[#452829] text-[#F3E8DF] rounded-br-none'
+                    : 'bg-white text-[#452829] rounded-bl-none border border-black/5'
+                }`}>
                   {msg.content}
                 </div>
 
@@ -132,7 +130,7 @@ export default function ChatBox() {
               </div>
             ))}
 
-            {isPending && (
+            {loading && (
               <div className="flex items-center gap-2 text-xs text-[#452829]/50">
                 <Bot className="w-4 h-4" />
                 AI is typing...
@@ -152,7 +150,7 @@ export default function ChatBox() {
               />
               <button
                 onClick={handleSend}
-                disabled={isPending || !input.trim()}
+                disabled={loading || !input.trim()}
                 className="absolute right-3 bg-[#452829] text-white p-2.5 rounded-xl disabled:opacity-30"
               >
                 <SendHorizontal className="w-5 h-5" />
