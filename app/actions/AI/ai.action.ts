@@ -1,8 +1,9 @@
 'use server';
 
+
+import { MONARCH_PORTFOLIO_DATA } from '@/app/Constant';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
-import { MONARCH_PORTFOLIO_DATA } from '../Constant';
 
 const google = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_GENERATION_CONFIG_API_KEY!,
@@ -12,8 +13,6 @@ export type ChatState = {
   output?: string;
   error?: string;
 };
-
-
 
 const COOLDOWN = 5000; // 5 seconds
 const userCooldown = new Map<string, number>();
