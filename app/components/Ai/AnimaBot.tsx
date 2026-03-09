@@ -1,7 +1,7 @@
 'use client';
 
 import Lottie from 'lottie-react';
-import animaBot from '../../../public/animations/AnimaBot.json';
+import animaBot from "@/public/animations/animaBot.json";
 
 type AnimaBotProps = {
   width?: number;
@@ -9,7 +9,7 @@ type AnimaBotProps = {
   loop?: boolean;
 };
 
-export default function Animabot({
+export default function AiBot({
   width = 70,
   height = 70,
   loop = true,
