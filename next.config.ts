@@ -23,7 +23,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '1',
+        hostname: "lh3.googleusercontent.com",
+      },
+       {
+        protocol: 'https',
+        hostname: "plus.unsplash.com",
       },
     ],
   },

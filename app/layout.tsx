@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import {  Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./AuthProvider";
-import Nav from "./components/Navigation/Nav";
 import { Toaster } from "react-hot-toast";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "./components/Navigation/SideBar/Sidebar";
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -25,8 +26,11 @@ export default function RootLayout({
      <AuthProvider>
       <html lang="en">
         <body className={` ${poppins.variable} antialiased`}>
-          <Nav/>
+           <SidebarProvider  >
+      <AppSidebar />
+       <SidebarTrigger />
           {children}
+           </SidebarProvider>
       <Toaster
   position="top-center"
   reverseOrder={false}

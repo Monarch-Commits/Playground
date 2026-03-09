@@ -13,7 +13,10 @@ export default async function getProduct() {
   try {
     const products = await prisma.product.findMany({
       where: { userId: user.id }, // only current user's products
-      orderBy: { createdAt: 'asc' }
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: true
+      }
     })
     return products
   } catch (error) {

@@ -8,21 +8,18 @@ export default async function syncUser() {
   const kindeUser = await getUser()
   if (!kindeUser) return null
 
-  // Check DB user
-  let dbUser = await prisma.user.findUnique({
-    where: { kindeId: kindeUser.id } // lookup via kindeId
+  const dbUser = await prisma.user.upsert({
+    where: {
+      kindeId: kindeUser.id
+    },
+    update: {},
+    create: {
+       kindeId: kindeUser.id,
+      name: kindeUser.given_name ?? null,
+      email: kindeUser.email ?? null,
+      imageUrl: kindeUser.picture ?? null
+    }
   })
-
-  if (!dbUser) {
-    dbUser = await prisma.user.create({
-      data: {
-        kindeId: kindeUser.id,
-        name: kindeUser.given_name || null,
-        email: kindeUser.email || null,
-        imageUrl: kindeUser.picture || null,
-      }
-    })
-  }
 
   return dbUser // ✅ return database user
 }

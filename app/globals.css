@@ -1,6 +1,13 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+body {
+  font-family: 'Poppins';
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 @custom-variant dark (&:is(.dark *));
 

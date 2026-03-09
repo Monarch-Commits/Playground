@@ -1,7 +1,8 @@
 'use server';
 
 
-import { MONARCH_PORTFOLIO_DATA } from '@/app/Constant';
+
+import { MONARCH_PORTFOLIO_DATA } from '@/Constant/ConstantAi';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { generateText } from 'ai';
 
