@@ -1,7 +1,7 @@
 'use client';
 
 import Lottie from 'lottie-react';
-import animaBot from "@/public/animations/animabot.json";
+import animaBot from "@/app/public/animations/animabot.json";
 
 type AnimaBotProps = {
   width?: number;
