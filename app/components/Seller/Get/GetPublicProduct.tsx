@@ -1,5 +1,5 @@
+import { getPublicProduct } from '@/app/actions/Product/getProduct.action';
 
-import { getPublicProduct } from '@/app/actions/Product/getProduct.action'
 import GetChild from './GetChild';
 
 export default async function GetPublicProduct() {
