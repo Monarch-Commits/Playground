@@ -24,3 +24,20 @@ export default async function getProduct() {
     throw error
   }
 }
+
+export async function getPublicProduct() {
+  // 2. Fetch products for that user only
+  try {
+    const products = await prisma.product.findMany({
+    
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: true
+      }
+    })
+    return products
+  } catch (error) {
+    console.error("Failed to fetch products:", error)
+    throw error
+  }
+}
