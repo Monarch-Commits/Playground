@@ -1,16 +1,14 @@
-
-"use client"
-import dynamic from "next/dynamic";
+'use client';
+import dynamic from 'next/dynamic';
 
 const CreateOrEditProduct = dynamic(
-  () => import("../Create/Create"),
-  { ssr: false } // Importanteng hindi ito i-SSR
+  () => import('../Create/Create'),
+  { ssr: false }, // Importanteng hindi ito i-SSR
 );
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Image from 'next/image';
 import DeleteButton from '../../Buttons/DeleteButton';
-
 
 interface User {
   id?: string;
@@ -29,8 +27,7 @@ interface Project {
 
 export default function GetChild({ p }: { p: Project }) {
   return (
-    <article className="relative break-inside-avoid mb-6 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-md transition-shadow hover:shadow-xl dark:border-gray-700 dark:bg-gray-50">
-      
+    <article className="relative mb-6 flex break-inside-avoid flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-md transition-shadow hover:shadow-xl dark:border-gray-700 dark:bg-gray-50">
       {/* USER */}
       <div className="flex items-center gap-3">
         <Avatar className="h-10 w-10 border">
@@ -41,18 +38,22 @@ export default function GetChild({ p }: { p: Project }) {
             height={40}
             className="rounded-full"
           />
-          <AvatarFallback>{p.user?.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+          <AvatarFallback>
+            {p.user?.name?.charAt(0).toUpperCase() || 'U'}
+          </AvatarFallback>
         </Avatar>
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-900 truncate">
+        <span className="truncate text-sm font-medium text-gray-700 dark:text-gray-900">
           {p.user?.name?.toLowerCase() || 'Unknown User'}
         </span>
       </div>
 
       {/* TITLE */}
-      <h2 className="text-lg font-bold text-gray-900 dark:text-black md:text-xl">{p.title}</h2>
+      <h2 className="text-lg font-bold text-gray-900 md:text-xl dark:text-black">
+        {p.title}
+      </h2>
 
       {/* DESCRIPTION */}
-      <p className="text-sm text-gray-600 dark:text-gray-800 line-clamp-3">
+      <p className="line-clamp-3 text-sm text-gray-600 dark:text-gray-800">
         {p.description}
       </p>
 

@@ -1,8 +1,9 @@
-import GetParent from "../components/Seller/Get/GetParent";
+import GetParent from '../components/Seller/Get/GetParent';
 
-
-export default function page() {
+export default function Page() {
   return (
-   <> <GetParent/> </>
-  )
+    <div className="my-10 flex min-h-screen flex-col items-center justify-center gap-6">
+      <GetParent />
+    </div>
+  );
 }

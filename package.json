@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-   "build": "prisma generate && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.33",
@@ -49,6 +50,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "prisma": "^7.4.2",
     "shadcn": "^3.8.5",
     "tailwindcss": "^4",

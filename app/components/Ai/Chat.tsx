@@ -11,7 +11,6 @@ import {
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { SendHorizontal, User, Loader2 } from 'lucide-react';
 
-
 import { Avatar } from '@/components/ui/avatar';
 import Image from 'next/image';
 import { askGeminiAction } from '@/app/actions/AI/ai.action';
