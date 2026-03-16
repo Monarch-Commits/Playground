@@ -3,10 +3,10 @@ import Child from './Child';
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: { category?: string };
+  searchParams: Promise<{ category?: string }>;
 }) {
-  // Kunin ang category mula sa URL, default to 'All'
-  const category = searchParams?.category || 'All';
+  const params = await searchParams;
+  const category = params?.category || 'All';
 
   return (
     <section className="mx-auto my-10 max-w-7xl px-6 py-16">
