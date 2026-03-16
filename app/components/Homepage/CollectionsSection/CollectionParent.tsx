@@ -1,10 +1,10 @@
 // app/collections/page.tsx (o kung saan man ito nakalagay)
-import { getPublicProduct } from '@/app/actions/Product/getProduct.action';
+import { Collections } from '@/app/actions/Product/getProduct.action';
 import CollectionsCard from './CollectionsCard';
 // I-import ang card component
 
 export default async function CollectionParent() {
-  const data = await getPublicProduct();
+  const data = await Collections();
 
   return (
     <section className="mx-auto max-w-7xl px-6 py-20">

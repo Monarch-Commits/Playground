@@ -17,6 +17,7 @@ import toast from 'react-hot-toast';
 import Image from 'next/image';
 import { Loader2, PlusCircle, Image as ImageIcon } from 'lucide-react';
 import upsertProduct from '@/app/actions/Product/create_Update_Product.action';
+import { categories } from '@/Constant/Constant';
 
 interface Props {
   product?: {
@@ -25,6 +26,7 @@ interface Props {
     description: string;
     imageUrl: string;
     price: number;
+    categoryId: string; // sa DB, ID pa rin ang naka-store
   };
 }
 
@@ -36,48 +38,55 @@ export default function CreateOrEditProduct({ product }: Props) {
   const [price, setPrice] = useState('');
   const [loading, setLoading] = useState(false);
   const [productId, setProductId] = useState<string | undefined>(undefined);
+  const [categoryName, setCategoryName] = useState(''); // ngayon name ang ginagamit
 
-  // Kung may existing product (edit mode), i-fill ang states
+  // Auto-fill at reset logic
   useEffect(() => {
-    if (product) {
-      setTitle(product.title);
-      setDescription(product.description);
-      setImageUrl(product.imageUrl);
-      setPrice(product.price.toString());
-      setProductId(product.id);
-      setIsOpen(false);
+    if (isOpen) {
+      if (product) {
+        setTitle(product.title);
+        setDescription(product.description);
+        setImageUrl(product.imageUrl);
+        setPrice(product.price.toString());
+        setProductId(product.id);
+
+        // Auto-select category by matching product.categoryId sa categories array
+        const category = categories.find((c) => c.id === product.categoryId);
+        setCategoryName(category ? category.name : '');
+      } else {
+        setTitle('');
+        setDescription('');
+        setImageUrl('');
+        setPrice('');
+        setProductId(undefined);
+        setCategoryName('');
+      }
     }
-  }, [product]);
+  }, [product, isOpen]);
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!title || !description || !imageUrl || !price) {
-      toast.error('Please fill in all fields!');
+    if (!title || !description || !imageUrl || !price || !categoryName) {
+      toast.error('Please fill in all fields, including category!');
       return;
     }
 
     setLoading(true);
     try {
       const result = await upsertProduct({
-        id: productId || '',
+        id: productId,
         title,
         description,
         imageUrl,
         price: Number(price),
+        categoryName, // name ang ipapasa sa server
       });
 
       if (result.success) {
         toast.success(
           result.wasCreated ? 'Product created!' : 'Product updated!',
         );
-        // Reset form only if it was create
-        if (result.wasCreated) {
-          setTitle('');
-          setDescription('');
-          setImageUrl('');
-          setPrice('');
-        }
         setIsOpen(false);
       } else {
         toast.error('Error saving product');
@@ -93,40 +102,49 @@ export default function CreateOrEditProduct({ product }: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" className="gap-2">
-          <PlusCircle className="h-4 w-4" />{' '}
-          {productId ? 'Edit Product' : 'Create Product'}
+        <Button
+          variant={product ? 'outline' : 'default'}
+          className="z-100 gap-2"
+        >
+          {product ? (
+            'Edit Product'
+          ) : (
+            <>
+              <PlusCircle className="h-4 w-4" /> Create Product
+            </>
+          )}
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-h-[95vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent
+        key={product?.id || 'new-product-form'}
+        className="max-h-[95vh] overflow-y-auto sm:max-w-lg"
+      >
         <DialogHeader>
           <DialogTitle className="text-xl font-bold tracking-tight">
             {productId ? 'Edit Product' : 'New Product'}
           </DialogTitle>
           <DialogDescription>
             {productId
-              ? 'Update your project details below.'
-              : 'Fill out the details below to add a new project.'}
+              ? 'Update your product details below.'
+              : 'Fill out the details below to add a new product.'}
           </DialogDescription>
         </DialogHeader>
 
-        {/* Image Preview */}
+        {/* Image Preview Area */}
         <div className="bg-muted/30 flex flex-col items-center justify-center rounded-lg border border-dashed px-4 py-6">
           {imageUrl && imageUrl.startsWith('http') ? (
-            <div className="group/image w-full overflow-hidden rounded-xl border bg-white shadow-lg">
+            <div className="group/image relative aspect-video w-full overflow-hidden rounded-xl border bg-white shadow-lg">
               <Image
                 src={imageUrl}
                 alt="Preview"
-                width={800}
-                height={600}
-                priority
-                className="h-auto w-full object-cover transition-transform duration-500 group-hover/image:scale-105"
+                fill
+                className="object-cover transition-transform duration-500 group-hover/image:scale-105"
                 onError={() => toast.error('Invalid Image URL')}
               />
             </div>
           ) : (
-            <div className="text-muted-foreground flex flex-col items-center">
+            <div className="text-muted-foreground flex flex-col items-center py-6">
               <ImageIcon className="h-10 w-10 opacity-20" />
               <p className="mt-2 text-center text-xs font-medium italic">
                 Paste a valid image URL below to see preview
@@ -142,44 +160,40 @@ export default function CreateOrEditProduct({ product }: Props) {
 
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="title">Project Title</Label>
+            <Label htmlFor="title">Product Title</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="E.g. E-commerce Dashboard"
+              placeholder="E.g. Red Roses Bouquet"
               disabled={loading}
               required
             />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="description">Project Description</Label>
-            <Input
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Briefly describe the project"
+            <Label htmlFor="category">Category</Label>
+            <select
+              id="category"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
               disabled={loading}
               required
-            />
+              className="border-input bg-background focus:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:outline-none"
+            >
+              <option value="" disabled>
+                Select Category
+              </option>
+              {categories.map((c) => (
+                <option key={c.name} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="imageUrl">Project Image URL</Label>
-            <Input
-              id="imageUrl"
-              type="url"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://images.unsplash.com/photo-..."
-              disabled={loading}
-              required
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="price">Project Price (PHP)</Label>
+            <Label htmlFor="price">Price (PHP)</Label>
             <Input
               id="price"
               type="number"
@@ -191,11 +205,36 @@ export default function CreateOrEditProduct({ product }: Props) {
             />
           </div>
 
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Briefly describe the product"
+              disabled={loading}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="imageUrl">Image URL</Label>
+            <Input
+              id="imageUrl"
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="https://images.unsplash.com/..."
+              disabled={loading}
+              required
+            />
+          </div>
+
           <div className="flex justify-end pt-4">
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {productId ? 'Updating...' : 'Creating...'}
                 </>
               ) : productId ? (

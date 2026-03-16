@@ -17,7 +17,7 @@ export const pages: PageItem[] = [
   },
   {
     name: 'Shop',
-    href: '/shop',
+    href: '/Shop',
     icon: MdLocalFlorist,
   },
   {

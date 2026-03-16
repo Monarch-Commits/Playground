@@ -16,6 +16,7 @@ export default async function getProduct() {
       orderBy: { createdAt: 'desc' },
       include: {
         user: true,
+        category: true,
       },
     });
     return products;
@@ -25,7 +26,7 @@ export default async function getProduct() {
   }
 }
 
-export async function getPublicProduct() {
+export async function Collections() {
   // 2. Fetch products for that user only
   try {
     const products = await prisma.product.findMany({
@@ -41,7 +42,6 @@ export async function getPublicProduct() {
 }
 
 export async function getBestSellers() {
-  // 1. Kunin ang Top 4 na pinakamabenta
   try {
     const products = await prisma.product.findMany({
       orderBy: { createdAt: 'desc' },
@@ -52,5 +52,23 @@ export async function getBestSellers() {
   } catch (error) {
     console.error('Failed to fetch products:', error);
     throw error;
+  }
+}
+
+// app/actions/Product/getProduct.action.ts
+export async function productShop(category?: string) {
+  try {
+    const products = await prisma.product.findMany({
+      where:
+        category && category !== 'All'
+          ? { category: { name: { equals: category, mode: 'insensitive' } } }
+          : undefined,
+      orderBy: { createdAt: 'desc' },
+      include: { category: true },
+    });
+    return products;
+  } catch (error) {
+    console.error('Failed to fetch products:', error);
+    return []; // Mas safe na mag-return ng empty array kaysa mag-throw
   }
 }
