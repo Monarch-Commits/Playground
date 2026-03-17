@@ -60,7 +60,8 @@ export default async function upsertProduct({
       });
     }
 
-    revalidatePath('/');
+    revalidatePath('/Shop');
+    revalidatePath('/SellerDashboard');
     return { success: true, data: result, wasCreated: !id };
   } catch (error) {
     console.error('Failed to create/update product:', error);
