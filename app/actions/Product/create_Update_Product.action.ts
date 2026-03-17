@@ -62,6 +62,7 @@ export default async function upsertProduct({
 
     revalidatePath('/Shop');
     revalidatePath('/SellerDashboard');
+    revalidatePath('/');
     return { success: true, data: result, wasCreated: !id };
   } catch (error) {
     console.error('Failed to create/update product:', error);
