@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Child from './Child';
 
 export default async function Page({
@@ -19,7 +20,11 @@ export default async function Page({
         </p>
       </div>
 
-      <Child category={category} />
+      <Suspense
+        fallback={<p className="text-center text-gray-500">Loading...</p>}
+      >
+        <Child category={category} />
+      </Suspense>
     </section>
   );
 }

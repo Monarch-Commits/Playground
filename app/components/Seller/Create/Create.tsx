@@ -110,7 +110,8 @@ export default function CreateOrEditProduct({ product }: Props) {
             'Edit Product'
           ) : (
             <>
-              <PlusCircle className="h-4 w-4" /> Create Product
+              <PlusCircle className="h-4 w-4" />{' '}
+              <span className="hidden lg:flex">Create Product</span>
             </>
           )}
         </Button>

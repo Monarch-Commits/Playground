@@ -12,7 +12,6 @@ import {
   LogoutLink,
   useKindeBrowserClient,
 } from '@kinde-oss/kinde-auth-nextjs';
-import CreateOrEditProduct from '../Seller/Create/Create';
 
 export default function DesktopNavbar() {
   const { user, isLoading } = useKindeBrowserClient(); // add signIn & signOut
@@ -77,7 +76,7 @@ export default function DesktopNavbar() {
       </div>
 
       {/* User / Cart / Wishlist */}
-      <div className="flex items-center gap-4">
+      <div className="hidden items-center gap-4 md:flex">
         {/* Conditional User / Sign In */}
         {user ? (
           <div className="flex items-center gap-4">
@@ -87,8 +86,6 @@ export default function DesktopNavbar() {
             >
               <ShoppingBag size={20} />
             </Link>
-
-            <CreateOrEditProduct />
 
             <Link href="/profile">
               <Avatar className="h-10 w-10 ring-2 ring-pink-300">

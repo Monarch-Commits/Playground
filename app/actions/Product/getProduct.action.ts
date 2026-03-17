@@ -69,6 +69,6 @@ export async function productShop(category?: string) {
     return products;
   } catch (error) {
     console.error('Failed to fetch products:', error);
-    return []; // Mas safe na mag-return ng empty array kaysa mag-throw
+    return [];
   }
 }
