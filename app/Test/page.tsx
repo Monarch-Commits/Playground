@@ -1,32 +1,35 @@
 import { Suspense } from 'react';
-import ShopSkeleton from '../components/Skeleton/Skeleton';
-import GetChild from './GetChild';
 import PaginationControls from './ProductsPage';
-import getProduct from '@/app/actions/Product/getProduct.action';
-import CreateOrEditProduct from '../components/Buttons/Create';
+import getProduct from '../actions/Product/Test/Test.action';
+
+import ShopSkeleton from '../components/Skeleton/Skeleton';
+import GetChild from './Child';
 
 export default async function GetParent({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string }>; // Gawing Promise ang type
 }) {
-  // Siguraduhin na may fallback object kung sakaling mag-fail ang promise resolution
-  const resolvedParams = (await searchParams) || {};
+  // Eto ang magic line! Kailangan i-await ang searchParams
+  const resolvedParams = await searchParams;
 
-  // Gumamit ng ?.page para safe
-  const currentPage = Number(resolvedParams?.page) || 1;
-  const limit = 5;
+  // Ngayon, makukuha na natin ang actual na value
+  const currentPage = Number(resolvedParams.page) || 1;
+  const limit = 3;
 
   return (
-    <section className="mx-auto my-10 max-w-7xl px-6 py-16">
-      <div className="mb-12 flex justify-between">
-        <h2 className="mb-4 text-4xl font-bold text-[#1a2b3c]">Your Shop</h2>
-        <CreateOrEditProduct />
-      </div>
+    <section className="mt-10 w-full px-4 lg:px-12">
+      <header className="mb-8 flex items-center justify-between">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          Your Products
+        </h1>
+      </header>
+
+      {/* Siguraduhin na ang key ay ang currentPage para mag-refresh ang Suspense */}
       <Suspense
         key={currentPage}
         fallback={
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <ShopSkeleton />
           </div>
         }

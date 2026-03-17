@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function ShopSkeleton() {
   return (
     <>
-      {Array.from({ length: 8 }).map((_, i) => (
+      {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
           className="max-w-7xl rounded-3xl border border-gray-100 p-4 shadow-sm"
@@ -25,10 +25,10 @@ export default function ShopSkeleton() {
             </div>
 
             {/* Multi-line Description */}
-            <div className="space-y-2">
+            <Skeleton className="space-y-2">
               <Skeleton className="h-3 w-full rounded-md" />
               <Skeleton className="h-3 w-5/6 rounded-md" />
-            </div>
+            </Skeleton>
 
             {/* Price & Action */}
             <div className="flex flex-col gap-3 pt-2">

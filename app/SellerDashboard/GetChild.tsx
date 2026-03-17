@@ -1,13 +1,16 @@
 'use client';
 import dynamic from 'next/dynamic';
 
-const CreateOrEditProduct = dynamic(() => import('../Create/Create'), {
-  ssr: false,
-});
+const CreateOrEditProduct = dynamic(
+  () => import('../components/Buttons/Create'),
+  {
+    ssr: false,
+  },
+);
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import Image from 'next/image';
-import DeleteButton from '../../Buttons/DeleteButton';
+import DeleteButton from '../components/Buttons/DeleteButton';
 
 interface User {
   id?: string;

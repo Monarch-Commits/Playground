@@ -1,29 +1,30 @@
 'use server';
 
 import prisma from '@/app/lib/prisma';
-import syncUser from '../User/syncUser.action';
-import { redirect } from 'next/navigation';
 
-export default async function getProduct() {
-  // 1. Get current Kinde user
+import { redirect } from 'next/navigation';
+import syncUser from '../User/syncUser.action';
+
+export default async function getProduct(page: number = 1, limit: number = 8) {
   const user = await syncUser();
   if (!user) redirect('/api/auth/login');
+  const skip = (page - 1) * limit;
 
-  // 2. Fetch products for that user only
-  try {
-    const products = await prisma.product.findMany({
-      where: { userId: user.id }, // only current user's products
-      orderBy: { createdAt: 'desc' },
-      include: {
-        user: true,
-        category: true,
-      },
-    });
-    return products;
-  } catch (error) {
-    console.error('Failed to fetch products:', error);
-    throw error;
-  }
+  // Halimbawa gamit ang Prisma:
+  const products = await prisma.product.findMany({
+    where: { userId: user.id },
+    include: {
+      user: true, // Isasama ang user information
+      category: true, // Isasama ang category information
+    },
+    skip: skip,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const totalCount = await prisma.product.count();
+
+  return { products, totalCount };
 }
 
 export async function Collections() {
