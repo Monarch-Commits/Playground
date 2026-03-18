@@ -5,30 +5,72 @@ import prisma from '@/app/lib/prisma';
 import { redirect } from 'next/navigation';
 import syncUser from '../User/syncUser.action';
 
-export default async function getProduct(page: number = 1, limit: number = 8) {
+// SELLER
+export default async function getProduct(page: number = 1, limit: number = 10) {
   const user = await syncUser();
   if (!user) redirect('/api/auth/login');
+
   const skip = (page - 1) * limit;
 
-  // Halimbawa gamit ang Prisma:
-  const products = await prisma.product.findMany({
-    where: { userId: user.id },
-    include: {
-      user: true, // Isasama ang user information
-      category: true, // Isasama ang category information
-    },
-    skip: skip,
-    take: limit,
-    orderBy: { createdAt: 'desc' },
-  });
-
-  const totalCount = await prisma.product.count();
+  const [products, totalCount] = await Promise.all([
+    prisma.product.findMany({
+      where: { userId: user.id },
+      include: { user: true, category: true },
+      skip: skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.product.count({
+      where: { userId: user.id },
+    }),
+  ]);
 
   return { products, totalCount };
 }
 
+// SHOP
+export async function productShop(
+  category?: string,
+  page: number = 1,
+  limit: number = 1,
+) {
+  try {
+    const skip = (page - 1) * limit;
+    const whereClause =
+      category && category !== 'All'
+        ? {
+            category: {
+              name: { equals: category, mode: 'insensitive' as const },
+            },
+          }
+        : {};
+
+    // Sabay na patakbuhin ang pagkuha ng data at pagbilang (Optimization)
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where: whereClause,
+        orderBy: { createdAt: 'desc' },
+        include: { category: { select: { name: true } } },
+        skip: skip,
+        take: limit,
+      }),
+      prisma.product.count({ where: whereClause }),
+    ]);
+
+    return {
+      products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { products: [], total: 0, page: 1, totalPages: 0 };
+  }
+}
+
+// COLLECTIONS
 export async function Collections() {
-  // 2. Fetch products for that user only
   try {
     const products = await prisma.product.findMany({
       orderBy: { createdAt: 'desc' },
@@ -53,23 +95,5 @@ export async function getBestSellers() {
   } catch (error) {
     console.error('Failed to fetch products:', error);
     throw error;
-  }
-}
-
-// app/actions/Product/getProduct.action.ts
-export async function productShop(category?: string) {
-  try {
-    const products = await prisma.product.findMany({
-      where:
-        category && category !== 'All'
-          ? { category: { name: { equals: category, mode: 'insensitive' } } }
-          : undefined,
-      orderBy: { createdAt: 'desc' },
-      include: { category: true },
-    });
-    return products;
-  } catch (error) {
-    console.error('Failed to fetch products:', error);
-    return [];
   }
 }

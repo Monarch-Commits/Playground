@@ -1,28 +1,10 @@
-'use client';
-import dynamic from 'next/dynamic';
-
-const CreateOrEditProduct = dynamic(
-  () => import('../components/Buttons/Create'),
-  {
-    ssr: false,
-  },
-);
-
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+// Alisin ang 'use client' dito
 import Image from 'next/image';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import DeleteButton from '../components/Buttons/DeleteButton';
+import CreateOrEditProduct from '../components/Buttons/Create'; // Direct import
 
-interface User {
-  id?: string;
-  name: string | null;
-  imageUrl: string | null;
-}
-
-interface Category {
-  id: string;
-  name: string;
-}
-
+// Interface definition (mananatili ito)
 interface Project {
   id: string;
   title: string;
@@ -30,23 +12,24 @@ interface Project {
   imageUrl: string;
   categoryId: string;
   price: number;
-  user: User | null;
-  category: Category | null;
+  user: { name: string | null; imageUrl: string | null } | null;
+  category: { id: string; name: string } | null;
 }
 
 export default function GetChild({ p }: { p: Project }) {
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-xl">
-      {/* IMAGE */}
+      {/* IMAGE - Server Rendered */}
       <div className="relative h-56 w-full overflow-hidden">
-        <Image
-          src={p.imageUrl}
-          alt={p.title}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-        />
-
-        {/* CATEGORY BADGE */}
+        <div className="relative mb-4 aspect-square overflow-hidden rounded-2xl">
+          <Image
+            src={p.imageUrl}
+            alt={p.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 20vw"
+            className="object-cover transition group-hover:scale-105"
+          />
+        </div>
         {p.category && (
           <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700 shadow">
             {p.category.name}
@@ -54,42 +37,36 @@ export default function GetChild({ p }: { p: Project }) {
         )}
       </div>
 
-      {/* CONTENT */}
+      {/* CONTENT - Server Rendered */}
       <div className="flex flex-col gap-3 p-4">
-        {/* USER */}
         <div className="flex items-center gap-3">
-          <Avatar className="h-9 w-9 border">
-            <Image
-              src={p.user?.imageUrl || '/default-avatar.png'}
-              alt="avatar"
-              width={36}
-              height={36}
-              className="rounded-full"
-            />
-            <AvatarFallback>
-              {p.user?.name?.charAt(0).toUpperCase() || 'U'}
-            </AvatarFallback>
+          <Avatar size="sm" className="border">
+            {p.user?.imageUrl ? (
+              <Image
+                src={p.user.imageUrl}
+                alt="avatar"
+                width={36}
+                height={36}
+                className="rounded-full"
+              />
+            ) : (
+              <AvatarFallback>{p.user?.name?.charAt(0) || 'U'}</AvatarFallback>
+            )}
           </Avatar>
-
           <span className="text-sm text-gray-600">
-            {p.user?.name || 'Unknown'}
+            {p.user?.name?.toLowerCase() || 'Unknown'}
           </span>
         </div>
 
-        {/* TITLE */}
         <h2 className="line-clamp-1 text-lg font-bold text-gray-900">
           {p.title}
         </h2>
-
-        {/* DESCRIPTION */}
         <p className="line-clamp-2 text-sm text-gray-600">{p.description}</p>
-
-        {/* PRICE */}
         <div className="text-lg font-bold text-green-600">
           ₱ {p.price.toLocaleString()}
         </div>
 
-        {/* ACTIONS */}
+        {/* ACTIONS - Dito papasok ang "islands" ng interactivity */}
         <div className="z-10 mt-3 flex items-center justify-between border-t pt-3">
           <DeleteButton id={p.id} />
           <CreateOrEditProduct product={p} />

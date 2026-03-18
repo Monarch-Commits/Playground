@@ -1,82 +1,24 @@
-'use client';
+// Alisin ang 'use client' – gagawin nating Server Component ito
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, Star } from 'lucide-react';
 import { productShop } from '../actions/Product/getProduct.action';
-import { categories } from '@/Constant/Constant';
-import { useEffect, useState } from 'react';
-import ShopSkeleton from '../components/Skeleton/Skeleton';
 
-interface Product {
-  id: string;
-  title: string;
-  price: number;
-  imageUrl: string;
-  description: string;
-  category: { name: string };
+interface ChildProps {
+  category: string;
+  page?: number; // Idagdag ang page prop
 }
 
-export default function Child({ category }: { category: string }) {
-  const [data, setData] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchProducts() {
-      setIsLoading(true);
-      const res = await productShop(category);
-      setData(res);
-      setIsLoading(false);
-    }
-    fetchProducts();
-  }, [category]);
-
-  const allCategories = categories;
+export default async function Child({ category, page = 1 }: ChildProps) {
+  // 1. Fetch data diretso sa server
+  const { products, totalPages } = await productShop(category, page);
 
   return (
-    <div>
-      {/* Filter Bar */}
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        {/* Desktop Buttons */}
-        <div className="hidden gap-2 md:flex">
-          {allCategories.map((c) => (
-            <Link
-              key={c.id}
-              href={`/Shop?category=${c.name}`}
-              className={`rounded-full px-6 py-2 transition ${
-                category === c.name
-                  ? 'bg-[#ff4d8d] text-white'
-                  : 'bg-gray-100 hover:bg-gray-200'
-              }`}
-            >
-              {c.name}
-            </Link>
-          ))}
-        </div>
-
-        {/* Mobile Dropdown */}
-        <div className="md:hidden">
-          <select
-            value={category}
-            onChange={(e) => {
-              window.location.href = `/Shop?category=${e.target.value}`;
-            }}
-            className="rounded-lg border border-gray-300 px-4 py-2"
-          >
-            {allCategories.map((c) => (
-              <option key={c.id} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
+    <>
       {/* Product Grid */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-        {isLoading ? (
-          <ShopSkeleton />
-        ) : data.length > 0 ? (
-          data.map((p) => (
+        {products.length > 0 ? (
+          products.map((p) => (
             <div
               key={p.id}
               className="group rounded-3xl border border-gray-100 p-4 shadow-sm transition-all hover:shadow-lg"
@@ -86,11 +28,12 @@ export default function Child({ category }: { category: string }) {
                   src={p.imageUrl}
                   alt={p.title}
                   fill
-                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 20vw"
+                  className="object-cover transition group-hover:scale-105"
                 />
-                <Heart className="absolute top-3 right-3 cursor-pointer text-white hover:fill-red-500" />
+                <Heart className="absolute top-3 right-3 cursor-pointer text-white transition hover:fill-red-500" />
               </div>
-              <h3 className="font-bold text-[#1a2b3c]">{p.title}</h3>
+              <h3 className="truncate font-bold text-[#1a2b3c]">{p.title}</h3>
               <div className="my-1 flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -100,23 +43,44 @@ export default function Child({ category }: { category: string }) {
                   />
                 ))}
               </div>
-              <p className="line-clamp-2 text-sm text-gray-600">
+              <p className="mb-2 line-clamp-2 h-10 text-sm text-gray-600">
                 {p.description}
               </p>
               <p className="mb-4 font-bold text-[#ff4d8d]">
                 ₱ {p.price.toLocaleString()}
               </p>
-              <button className="w-full rounded-full border border-[#ff4d8d] py-3 text-[#ff4d8d] transition hover:bg-[#ff4d8d] hover:text-white">
+              <button className="w-full rounded-full border border-[#ff4d8d] py-2 font-medium text-[#ff4d8d] transition hover:bg-[#ff4d8d] hover:text-white">
                 Add to Cart
               </button>
             </div>
           ))
         ) : (
-          <p className="col-span-full text-center text-gray-500">
+          <p className="col-span-full py-20 text-center text-gray-500">
             Walang nakitang bulaklak sa kategoryang ito.
           </p>
         )}
       </div>
-    </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="mt-12 flex justify-center gap-4">
+          <Link
+            href={`/Shop?category=${category}&page=${Math.max(1, page - 1)}`}
+            className={`rounded-lg border px-4 py-2 ${page <= 1 ? 'pointer-events-none opacity-50' : 'hover:bg-gray-50'}`}
+          >
+            Previous
+          </Link>
+          <span className="flex items-center font-medium">
+            Page {page} of {totalPages}
+          </span>
+          <Link
+            href={`/Shop?category=${category}&page=${Math.min(totalPages, page + 1)}`}
+            className={`rounded-lg border px-4 py-2 ${page >= totalPages ? 'pointer-events-none opacity-50' : 'hover:bg-gray-50'}`}
+          >
+            Next
+          </Link>
+        </div>
+      )}
+    </>
   );
 }
