@@ -15,7 +15,12 @@ import { Separator } from '@/components/ui/separator';
 import { SyntheticEvent, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
-import { Loader2, PlusCircle, Image as ImageIcon } from 'lucide-react';
+import {
+  Loader2,
+  PlusCircle,
+  Image as ImageIcon,
+  SquarePen,
+} from 'lucide-react';
 import upsertProduct from '@/app/actions/Product/create_Update_Product.action';
 import { categories } from '@/Constant/Constant';
 
@@ -104,10 +109,10 @@ export default function CreateOrEditProduct({ product }: Props) {
       <DialogTrigger asChild>
         <Button
           variant={product ? 'outline' : 'default'}
-          className="z-100 gap-2"
+          className="z-50 gap-2"
         >
           {product ? (
-            'Edit Product'
+            <SquarePen size={16} color="#1354ec" strokeWidth={2.25} />
           ) : (
             <>
               <PlusCircle className="h-4 w-4" />{' '}

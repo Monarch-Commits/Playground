@@ -1,87 +1,62 @@
 import { Suspense } from 'react';
-import ShopSkeleton from '../components/Skeleton/Skeleton';
-import GetChild from './GetChild';
-import PaginationControls from './ProductsPage'; // Siguraduhing tama ang import name nito
-import getProduct from '@/app/actions/Product/getProduct.action';
-import CreateOrEditProduct from '../components/Buttons/Create';
 
-export default async function GetParent({
+import ShopSkeleton from '../components/Skeleton/Skeleton';
+import Link from 'next/link';
+import { categories } from '@/Constant/Constant';
+import Child from './Child';
+import CreateOrEditProduct from '../components/Buttons/Create';
+export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
 }) {
-  const resolvedParams = (await searchParams) || {};
-  const currentPage = Number(resolvedParams?.page) || 1;
-  const limit = 4;
+  const params = await searchParams;
 
-  // Kinukuha natin ang data dito para makuha ang totalCount para sa Header.
-  // Huwag mag-alala sa performance; nire-reuse ng Next.js ang request na ito (Memoization).
-  const { totalCount } = await getProduct(currentPage, limit);
+  // Siguraduhin na ang category ay may default, at ang page ay Number
+  const category = params?.category || 'All';
+  const page = Number(params?.page) || 1;
 
+  const allCategories = categories;
   return (
     <section className="mx-auto my-10 max-w-7xl px-6 py-16">
-      <div className="mb-12 flex items-center justify-between border-b pb-6">
+      <div className="mb-12 flex justify-between text-start">
         <div>
-          <h2 className="text-4xl font-bold text-[#1a2b3c]">Your Shop</h2>
-          <p className="mt-2 text-sm font-medium text-gray-500">
-            You have a total of{' '}
-            <span className="font-bold text-blue-600">{totalCount}</span>{' '}
-            products
+          <h2 className="mb-4 text-4xl font-bold text-[#1a2b3c]">Shop</h2>
+          <p className="text-gray-500">
+            Explore our curated collection of fresh seasonal blooms.
           </p>
         </div>
+
         <CreateOrEditProduct />
       </div>
 
+      {/* Category Container */}
+      <div className="scrollbar-hide mb-12 flex gap-2 overflow-x-auto pb-2 md:flex-wrap md:justify-start">
+        {allCategories.map((c) => (
+          <Link
+            key={c.id}
+            href={`/SellerDashboard?category=${c.name}&page=1`}
+            className={`rounded-full px-6 py-2 text-sm whitespace-nowrap transition md:text-base ${
+              category === c.name
+                ? 'bg-[#ff4d8d] text-white'
+                : 'bg-gray-100 hover:bg-gray-200'
+            }`}
+          >
+            {c.name}
+          </Link>
+        ))}
+      </div>
+
       <Suspense
-        key={currentPage}
+        key={`${category}-${page}`}
         fallback={
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             <ShopSkeleton />
           </div>
         }
       >
-        <ProductGrid currentPage={currentPage} limit={limit} />
+        <Child category={category} page={page} />
       </Suspense>
     </section>
-  );
-}
-
-// Child Component
-async function ProductGrid({
-  currentPage,
-  limit,
-}: {
-  currentPage: number;
-  limit: number;
-}) {
-  const { products, totalCount } = await getProduct(currentPage, limit);
-  const totalPages = Math.ceil(totalCount / limit);
-
-  if (products.length === 0) {
-    return (
-      <div className="flex h-40 items-center justify-center rounded-lg border-2 border-dashed">
-        <p className="text-gray-400">No products found in your shop.</p>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6">
-        {products.map((p) => (
-          <GetChild key={p.id} p={p} />
-        ))}
-      </div>
-
-      {/* Pagination UI */}
-      <div className="mt-12">
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          hasNextPage={currentPage < totalPages}
-          hasPrevPage={currentPage > 1}
-        />
-      </div>
-    </>
   );
 }

@@ -4,35 +4,60 @@ import prisma from '@/app/lib/prisma';
 
 import { redirect } from 'next/navigation';
 import syncUser from '../User/syncUser.action';
+import { Prisma } from '@/lib/generated/prisma/client';
 
-// SELLER
-export default async function getProduct(page: number = 1, limit: number = 10) {
+// SELLER PRODUCT
+export async function getSellerProduct(
+  category?: string,
+  page: number = 1,
+  limit: number = 5,
+) {
   const user = await syncUser();
   if (!user) redirect('/api/auth/login');
 
-  const skip = (page - 1) * limit;
+  try {
+    const skip = (page - 1) * limit;
 
-  const [products, totalCount] = await Promise.all([
-    prisma.product.findMany({
-      where: { userId: user.id },
-      include: { user: true, category: true },
-      skip: skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    }),
-    prisma.product.count({
-      where: { userId: user.id },
-    }),
-  ]);
+    const whereClause: Prisma.ProductWhereInput = {
+      userId: user.id,
+      ...(category &&
+        category !== 'All' && {
+          category: { name: { equals: category, mode: 'insensitive' } },
+        }),
+    };
 
-  return { products, totalCount };
+    // Sabay na patakbuhin ang pagkuha ng data at pagbilang
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where: whereClause,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          category: { select: { name: true } },
+          user: true,
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count({ where: whereClause }),
+    ]);
+
+    return {
+      products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  } catch (error) {
+    console.error('Database Error:', error);
+    return { products: [], total: 0, page: 1, totalPages: 0 };
+  }
 }
 
 // SHOP
 export async function productShop(
   category?: string,
   page: number = 1,
-  limit: number = 1,
+  limit: number = 5,
 ) {
   try {
     const skip = (page - 1) * limit;
@@ -69,7 +94,7 @@ export async function productShop(
   }
 }
 
-// COLLECTIONS
+// HOME COLLECTIONS
 export async function Collections() {
   try {
     const products = await prisma.product.findMany({
@@ -84,6 +109,7 @@ export async function Collections() {
   }
 }
 
+// HOME BEST SELLERS
 export async function getBestSellers() {
   try {
     const products = await prisma.product.findMany({

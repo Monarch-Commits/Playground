@@ -3,8 +3,8 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from './AuthProvider';
 import { Toaster } from 'react-hot-toast';
-import { Navigation } from './components/Navigation/Nav';
-import Footer from './components/Homepage/Footer/Footer';
+import { Navigation } from './components/layout/Navigation/Nav';
+import Footer from './components/layout/Footer/Footer';
 
 const poppins = Poppins({
   variable: '--font-poppins',

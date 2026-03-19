@@ -26,13 +26,12 @@ export default async function Page({
         </p>
       </div>
 
-      <div className="mb-12 hidden gap-2 md:flex">
+      <div className="scrollbar-hide mb-12 flex gap-2 overflow-x-auto pb-2 md:flex-wrap md:justify-start">
         {allCategories.map((c) => (
           <Link
             key={c.id}
-            // Dito, sinisiguro natin na balik sa Page 1 ang user tuwing magpapalit ng kategorya
             href={`/Shop?category=${c.name}&page=1`}
-            className={`rounded-full px-6 py-2 transition ${
+            className={`rounded-full px-6 py-2 text-sm whitespace-nowrap transition md:text-base ${
               category === c.name
                 ? 'bg-[#ff4d8d] text-white'
                 : 'bg-gray-100 hover:bg-gray-200'
