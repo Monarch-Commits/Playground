@@ -1,72 +1,134 @@
-import { Suspense } from 'react';
-import PaginationControls from './ProductsPage';
-import getProduct from '../actions/Product/Test/Test.action';
+'use client';
 
-import ShopSkeleton from '../components/Skeleton/Skeleton';
-import GetChild from './Child';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
-export default async function GetParent({
-  searchParams,
-}: {
-  searchParams: Promise<{ page?: string }>; // Gawing Promise ang type
-}) {
-  // Eto ang magic line! Kailangan i-await ang searchParams
-  const resolvedParams = await searchParams;
+type Slide = {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+};
 
-  // Ngayon, makukuha na natin ang actual na value
-  const currentPage = Number(resolvedParams.page) || 1;
-  const limit = 3;
+const slides: Slide[] = [
+  {
+    id: 1,
+    title: 'Bring Nature Into Your Space',
+    description:
+      'Transform your home into a calm, living sanctuary with curated indoor plants.',
+    image: '/plants/plant11.png',
+  },
+  {
+    id: 2,
+    title: 'Elevate Your Living Environment',
+    description:
+      'Modern greenery designed to complement architecture and lifestyle.',
+    image: '/plants/plant22.png',
+  },
+  {
+    id: 3,
+    title: 'A Breath of Fresh Design',
+    description:
+      'Minimal, elegant, and timeless plant collections for your space.',
+    image: '/plants/plant33.png',
+  },
+];
 
-  return (
-    <section className="mt-10 w-full px-4 lg:px-12">
-      <header className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-          Your Products
-        </h1>
-      </header>
+export default function Hero() {
+  const [index, setIndex] = useState<number>(0);
 
-      {/* Siguraduhin na ang key ay ang currentPage para mag-refresh ang Suspense */}
-      <Suspense
-        key={currentPage}
-        fallback={
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <ShopSkeleton />
-          </div>
-        }
-      >
-        <ProductGrid currentPage={currentPage} limit={limit} />
-      </Suspense>
-    </section>
-  );
-}
+  // Auto-slide every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % slides.length);
+    }, 5000);
 
-async function ProductGrid({
-  currentPage,
-  limit,
-}: {
-  currentPage: number;
-  limit: number;
-}) {
-  const { products, totalCount } = await getProduct(currentPage, limit);
-  const totalPages = Math.ceil(totalCount / limit);
+    return () => clearInterval(interval);
+  }, []);
 
-  if (!products.length) return <p>No products found.</p>;
+  const current = slides[index];
 
   return (
-    <>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6">
-        {products.map((p) => (
-          <GetChild key={p.id} p={p} />
-        ))}
+    <section className="relative h-screen w-full overflow-hidden bg-[#0f1a14] text-white">
+      {/* 1. Background Glow */}
+      <div className="absolute inset-0 bg-linear-to-br from-green-900/20 via-transparent to-black/40" />
+
+      {/* 2. Diagonal Design Layer */}
+      <div className="clip-diagonal absolute inset-0 bg-[#16241c]/70 backdrop-blur-md" />
+
+      <div className="relative z-10 flex h-full flex-col lg:flex-row">
+        {/* LEFT CONTENT AREA */}
+        <div className="flex w-full flex-col justify-center px-8 lg:w-1/2 lg:px-16">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.id}
+              initial={{ opacity: 0, x: -80 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className="space-y-6"
+            >
+              <h1 className="text-4xl leading-tight font-semibold md:text-6xl">
+                {current.title}
+              </h1>
+
+              <p className="max-w-lg text-gray-300">{current.description}</p>
+
+              <div className="flex gap-4">
+                <button className="rounded-2xl bg-green-600 px-6 py-3 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-green-500 hover:shadow-green-500/30">
+                  Shop Now
+                </button>
+
+                <button className="rounded-2xl border border-white/20 bg-white/5 px-6 py-3 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/10">
+                  Explore Collection
+                </button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* RIGHT IMAGE AREA */}
+        <div className="relative w-full lg:w-1/2">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.image}
+              initial={{ opacity: 0, x: 100, scale: 1.1 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 1 }}
+              className="relative h-full w-full"
+            >
+              <Image
+                src={current.image}
+                alt="Featured Plant Collection"
+                fill
+                className="object-cover"
+                priority
+              />
+
+              {/* Bottom Gradient Overlay for readability and depth */}
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* Pagination UI */}
-      <PaginationControls
-        currentPage={currentPage}
-        totalPages={totalPages}
-        hasNextPage={currentPage < totalPages}
-        hasPrevPage={currentPage > 1}
-      />
-    </>
+      {/* Navigation Dots */}
+      <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-3">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIndex(i)}
+            className={`h-3 w-3 rounded-full transition-all ${
+              i === index
+                ? 'scale-125 bg-green-400'
+                : 'bg-white/30 hover:bg-white/60'
+            }`}
+            aria-label={`Go to slide ${i + 1}`}
+          />
+        ))}
+      </div>
+    </section>
   );
 }

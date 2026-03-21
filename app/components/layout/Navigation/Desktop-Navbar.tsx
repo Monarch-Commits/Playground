@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShoppingBag, LogOut } from 'lucide-react';
+import { LogOut, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { pages } from '@/Constant/ConstantLink';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -12,42 +11,22 @@ import {
   LogoutLink,
   useKindeBrowserClient,
 } from '@kinde-oss/kinde-auth-nextjs';
+import { usePathname } from 'next/navigation';
 
 export default function DesktopNavbar() {
-  const { user, isLoading } = useKindeBrowserClient(); // add signIn & signOut
-  const [activeSection, setActiveSection] = useState('');
-
-  useEffect(() => {
-    const sections = pages.map((p) =>
-      document.getElementById(p.href.replace('#', '')),
-    );
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(`#${entry.target.id}`);
-          }
-        });
-      },
-      { threshold: 0.6 },
-    );
-
-    sections.forEach((section) => section && observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
-
-  if (isLoading) return <div>Loading...</div>;
+  const { user } = useKindeBrowserClient(); // add signIn & signOut
+  const pathname = usePathname();
 
   return (
     <div className="relative flex w-full items-center justify-between">
       <div>
         <Link href="/">
           <Image
-            src="https://drive.google.com/uc?export=view&id=1czPtHOnb06NAo-awhCgsOgO_uHXNEUVU"
-            width={40}
-            height={40}
+            src="/logo/logo.png"
             alt="Logo"
+            width={180}
+            height={100}
+            className="h-12 w-auto" // h-12 = 48px, width adjusts automatically
           />
         </Link>
       </div>
@@ -56,7 +35,7 @@ export default function DesktopNavbar() {
       <div className="hidden items-center gap-3 md:flex">
         {pages.map((p, index) => {
           const Icon = p.icon;
-          const isActive = activeSection === p.href;
+          const isActive = pathname === p.href;
 
           return (
             <Link key={index} href={p.href}>
@@ -79,12 +58,9 @@ export default function DesktopNavbar() {
       <div className="hidden items-center gap-4 md:flex">
         {/* Conditional User / Sign In */}
         {user ? (
-          <div className="flex items-center gap-4">
-            <Link
-              href="/cart"
-              className="rounded-full bg-pink-50 p-2 text-pink-500"
-            >
-              <ShoppingBag size={20} />
+          <div className="flex items-center gap-6">
+            <Link href="/cart">
+              <ShoppingCart size={20} />
             </Link>
 
             <Link href="/profile">

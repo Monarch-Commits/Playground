@@ -104,11 +104,17 @@ export default function Footer() {
             <br />
             Open Mon-Sat, 8am - 6pm
           </p>
-          <div className="flex h-32 w-full items-center justify-center overflow-hidden rounded-2xl bg-gray-100">
-            {/* Dito mo ilalagay ang map image o iframe */}
-            <span className="text-xs text-gray-400 italic">
-              Map Placeholder
-            </span>
+          <div className="h-32 w-full overflow-hidden rounded-2xl bg-gray-100">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.7628900733557!2d125.15516877098686!3d6.918925222752615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x32f855fcf974b3bf%3A0xf06e34380ef1359e!2s7seas%20Travel%20%26%20Tours!5e0!3m2!1sen!2sus!4v1774052635395!5m2!1sen!2sus"
+              width="100%"
+              height="100%"
+              style={{ border: '0' }} // ✅ string
+              allowFullScreen // ✅ camelCase
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade" // ✅ camelCase
+              title="Petals & Bloom Location" // ✅ accessibility
+            ></iframe>
           </div>
         </div>
       </div>

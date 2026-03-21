@@ -16,9 +16,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { pages } from '@/Constant/ConstantLink';
+import { usePathname } from 'next/navigation';
 
 export default function MobileNavbar() {
   const { user } = useKindeBrowserClient();
+  const pathname = usePathname();
 
   return (
     <div className="flex items-center justify-center md:hidden">
@@ -35,17 +37,22 @@ export default function MobileNavbar() {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className="flex w-52 flex-col rounded-xl border border-gray-100 p-2 shadow-lg md:hidden">
-          {pages.map((p, idx) => (
-            <DropdownMenuItem key={idx} asChild>
-              <Link
-                href={p.href}
-                className="flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-pink-50 hover:text-pink-600"
-              >
-                <p.icon className="h-5 w-5" />
-                <span className="font-medium">{p.name}</span>
-              </Link>
-            </DropdownMenuItem>
-          ))}
+          {pages.map((p, idx) => {
+            const isActive = pathname === p.href; // 👈 active check
+            return (
+              <DropdownMenuItem key={idx} asChild>
+                <Link
+                  href={p.href}
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-pink-50 hover:text-pink-600 ${
+                    isActive ? 'bg-pink-100 font-semibold text-pink-700' : ''
+                  }`}
+                >
+                  <p.icon className="h-5 w-5" />
+                  <span className="font-medium">{p.name}</span>
+                </Link>
+              </DropdownMenuItem>
+            );
+          })}
 
           <div className="mt-3 flex flex-col items-start gap-3 border-t border-gray-100 pt-3">
             {user ? (
