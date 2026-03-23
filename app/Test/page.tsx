@@ -16,7 +16,7 @@ const slides: Slide[] = [
     id: 1,
     title: 'Bring Nature Into Your Space',
     description:
-      'Transform your home into a calm, living sanctuary with curated indoor plants.',
+      'Transform your home into a calm, a living sanctuary with curated indoor plants.',
     image: '/plants/plant11.png',
   },
   {
