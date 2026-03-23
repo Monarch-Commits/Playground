@@ -3,14 +3,21 @@ import prisma from '@/app/lib/prisma';
 import syncUser from '../User/syncUser.action';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import cloudinary from '@/lib/cloudinary';
+import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 
 interface Product {
-  imageUrl: string;
+  imageUrl?: File; // <-- optional na ngayon
   title: string;
   description: string;
   price: number;
   id?: string;
   categoryName: string; // changed from categoryId
+}
+
+interface CloudinaryUploadResult {
+  secure_url: string;
+  public_id: string;
 }
 
 export default async function upsertProduct({
@@ -24,10 +31,37 @@ export default async function upsertProduct({
   const dbUser = await syncUser();
   if (!dbUser) redirect('/api/auth/login');
 
+  if (!imageUrl || imageUrl.size === 0) {
+    throw new Error('Image is required');
+  }
+
   // Hanapin ang category id gamit ang name
   const category = await prisma.category.findUnique({
     where: { name: categoryName },
   });
+
+  const arrayBuffer = await imageUrl.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  // Upload sa Cloudinary
+  const uploadResult = await new Promise<CloudinaryUploadResult>(
+    (resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { folder: 'e-commerce flower products' },
+          (
+            error: UploadApiErrorResponse | undefined,
+            result: UploadApiResponse | undefined,
+          ) => {
+            if (error) reject(error);
+            else if (!result?.secure_url)
+              reject(new Error('Cloudinary upload failed'));
+            else resolve(result as CloudinaryUploadResult);
+          },
+        )
+        .end(buffer);
+    },
+  );
 
   if (!category) throw new Error('Invalid category');
 
@@ -41,7 +75,7 @@ export default async function upsertProduct({
         data: {
           title,
           description,
-          imageUrl,
+          imageUrl: uploadResult.secure_url,
           price: Math.floor(price),
           categoryId: category.id,
         },
@@ -53,7 +87,7 @@ export default async function upsertProduct({
           userId: dbUser.id,
           title,
           description,
-          imageUrl,
+          imageUrl: uploadResult.secure_url,
           price: Math.floor(price),
           categoryId: category.id,
         },

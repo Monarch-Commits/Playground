@@ -3,6 +3,7 @@ import Child from './Child';
 import ShopSkeleton from '../components/Skeleton/Skeleton';
 import Link from 'next/link';
 import { categories } from '@/Constant/Constant';
+
 export default async function Page({
   searchParams,
 }: {
