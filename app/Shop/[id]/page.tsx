@@ -22,7 +22,7 @@ export default function ProductPage() {
   const increaseQty = () => setQuantity(Math.min(99, quantity + 1));
 
   return (
-    <div className="mx-auto max-w-7xl overflow-hidden rounded-2xl bg-gray-50 p-4 shadow-sm lg:p-8">
+    <div className="mx-auto my-15 max-w-7xl overflow-hidden rounded-2xl bg-gray-50 p-4 py-16 shadow-sm lg:p-8">
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         {/* LEFT: Main Image + Gallery */}
         <div className="space-y-6">

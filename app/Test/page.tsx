@@ -1,134 +1,211 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import {
+  ShoppingCart,
+  Star,
+  Minus,
+  Plus,
+  Heart,
+  ShieldCheck,
+  Clock,
+} from 'lucide-react';
 
-type Slide = {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-};
+export default function ProductPage() {
+  const params = useParams();
+  const productId = params.id;
 
-const slides: Slide[] = [
-  {
-    id: 1,
-    title: 'Bring Nature Into Your Space',
+  // Mock data - sa actual, kukunin mo ito sa API gamit ang productId
+  const product = {
+    name: 'Red Rose Romance Bouquet',
+    price: 45.0,
+    rating: 4.8,
+    reviews: 48,
     description:
-      'Transform your home into a calm, a living sanctuary with curated indoor plants.',
-    image: '/plants/plant11.png',
-  },
-  {
-    id: 2,
-    title: 'Elevate Your Living Environment',
-    description:
-      'Modern greenery designed to complement architecture and lifestyle.',
-    image: '/plants/plant22.png',
-  },
-  {
-    id: 3,
-    title: 'A Breath of Fresh Design',
-    description:
-      'Minimal, elegant, and timeless plant collections for your space.',
-    image: '/plants/plant33.png',
-  },
-];
+      'A luxurious arrangement of deep crimson roses, hand-selected for their velvet texture and exquisite fragrance.',
+    subDescription:
+      'Wrapped in premium cream paper and finished with a sage green silk ribbon, our signature bouquet conveys timeless love.',
+    images: [
+      '/image1.jpg', // Palitan ng path ng images mo
+      '/image2.jpg',
+      '/image3.jpg',
+      '/image4.jpg',
+    ],
+  };
 
-export default function Hero() {
-  const [index, setIndex] = useState<number>(0);
-
-  // Auto-slide every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slides.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const current = slides[index];
+  const [mainImage, setMainImage] = useState(product.images[0]);
+  const [quantity, setQuantity] = useState(1);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-[#0f1a14] text-white">
-      {/* 1. Background Glow */}
-      <div className="absolute inset-0 bg-linear-to-br from-green-900/20 via-transparent to-black/40" />
+    <div className="min-h-screen bg-white pt-28 pb-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+          {/* LEFT COLUMN: IMAGES */}
+          <div className="flex flex-col gap-4">
+            {/* Main Image Container (Portrait 4:5) */}
+            <div className="relative aspect-4/5 w-full overflow-hidden rounded-[2.5rem] bg-gray-50 shadow-sm transition-all">
+              <Image
+                src={mainImage}
+                alt={product.name}
+                fill
+                priority
+                className="object-cover transition-transform duration-700 hover:scale-105"
+              />
+              {/* Floating Wishlist Button */}
+              <button className="absolute top-6 right-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition-all hover:bg-white active:scale-90">
+                <Heart size={20} className="text-gray-900" />
+              </button>
+            </div>
 
-      {/* 2. Diagonal Design Layer */}
-      <div className="clip-diagonal absolute inset-0 bg-[#16241c]/70 backdrop-blur-md" />
-
-      <div className="relative z-10 flex h-full flex-col lg:flex-row">
-        {/* LEFT CONTENT AREA */}
-        <div className="flex w-full flex-col justify-center px-8 lg:w-1/2 lg:px-16">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current.id}
-              initial={{ opacity: 0, x: -80 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="space-y-6"
-            >
-              <h1 className="text-4xl leading-tight font-semibold md:text-6xl">
-                {current.title}
-              </h1>
-
-              <p className="max-w-lg text-gray-300">{current.description}</p>
-
-              <div className="flex gap-4">
-                <button className="rounded-2xl bg-green-600 px-6 py-3 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-green-500 hover:shadow-green-500/30">
-                  Shop Now
+            {/* Thumbnails */}
+            <div className="flex justify-start gap-4 px-2">
+              {product.images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setMainImage(img)}
+                  className={`relative h-24 w-20 overflow-hidden rounded-2xl border-2 transition-all ${
+                    mainImage === img
+                      ? 'border-[#FA2B91] ring-4 ring-pink-50'
+                      : 'border-transparent opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <Image
+                    src={img}
+                    alt="preview"
+                    fill
+                    className="object-cover"
+                  />
                 </button>
+              ))}
+            </div>
+          </div>
 
-                <button className="rounded-2xl border border-white/20 bg-white/5 px-6 py-3 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-white/10">
-                  Explore Collection
+          {/* RIGHT COLUMN: DETAILS */}
+          <div className="flex flex-col py-4">
+            {/* Breadcrumb / Category */}
+            <nav className="mb-6 flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
+              <span>Home</span>
+              <span className="h-1 w-1 rounded-full bg-gray-300"></span>
+              <span>Shop</span>
+              <span className="h-1 w-1 rounded-full bg-gray-300"></span>
+              <span className="text-[#FA2B91]">Bestseller {productId}</span>
+            </nav>
+
+            {/* Title & Price */}
+            <div className="mb-8 space-y-4">
+              <h1 className="font-serif text-5xl leading-[1.1] font-bold text-slate-900 md:text-6xl">
+                {product.name}
+              </h1>
+              <div className="flex items-center gap-6">
+                <span className="text-3xl font-semibold text-[#FA2B91]">
+                  ${product.price.toFixed(2)}
+                </span>
+                <div className="flex items-center gap-2 border-l border-gray-200 pl-6">
+                  <div className="flex text-pink-500">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        fill={i < 4 ? 'currentColor' : 'none'}
+                        stroke="currentColor"
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium text-gray-400 underline decoration-gray-200 underline-offset-4">
+                    {product.reviews} Reviews
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="mb-10 max-w-md space-y-4">
+              <p className="text-lg leading-relaxed text-slate-600">
+                {product.description}
+              </p>
+              <p className="text-sm leading-relaxed text-gray-400">
+                {product.subDescription}
+              </p>
+            </div>
+
+            {/* Selection Area */}
+            <div className="mb-10 space-y-8">
+              {/* Quantity */}
+              <div className="space-y-3">
+                <label className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">
+                  Quantity
+                </label>
+                <div className="flex w-fit items-center gap-2 rounded-full border border-gray-100 bg-gray-50/50 p-1.5">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm transition-all hover:bg-gray-50 active:scale-90 disabled:opacity-50"
+                    disabled={quantity === 1}
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span className="w-12 text-center font-bold text-slate-800">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm transition-all hover:bg-gray-50 active:scale-90"
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col gap-4 sm:flex-row">
+                <button className="group relative flex-2 overflow-hidden rounded-full bg-[#FA2B91] py-5 font-bold text-white shadow-xl shadow-pink-200 transition-all hover:bg-[#D12E7B] active:scale-[0.98]">
+                  <div className="flex items-center justify-center gap-3">
+                    <ShoppingCart
+                      size={20}
+                      className="transition-transform group-hover:-translate-y-1"
+                    />
+                    <span>Add to Cart</span>
+                  </div>
+                </button>
+                <button className="flex-1 rounded-full border-2 border-[#FA2B91] py-5 font-bold text-[#FA2B91] transition-all hover:bg-pink-50 active:scale-[0.98]">
+                  Buy Now
                 </button>
               </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            </div>
 
-        {/* RIGHT IMAGE AREA */}
-        <div className="relative w-full lg:w-1/2">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current.image}
-              initial={{ opacity: 0, x: 100, scale: 1.1 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 50 }}
-              transition={{ duration: 1 }}
-              className="relative h-full w-full"
-            >
-              <Image
-                src={current.image}
-                alt="Featured Plant Collection"
-                fill
-                className="object-cover"
-                priority
-              />
-
-              {/* Bottom Gradient Overlay for readability and depth */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-            </motion.div>
-          </AnimatePresence>
+            {/* Trust Badges / Logistics */}
+            <div className="grid grid-cols-1 gap-4 rounded-3xl border border-gray-100 bg-gray-50/50 p-6 sm:grid-cols-2">
+              <div className="flex items-start gap-3">
+                <div className="rounded-xl bg-white p-2.5 text-[#FA2B91] shadow-sm">
+                  <Clock size={20} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800">
+                    Fast Delivery
+                  </h4>
+                  <p className="mt-1 text-[11px] leading-tight text-gray-500">
+                    Order in 2h 45m for todays delivery.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="rounded-xl bg-white p-2.5 text-green-500 shadow-sm">
+                  <ShieldCheck size={20} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800">
+                    Freshness Guranteed
+                  </h4>
+                  <p className="mt-1 text-[11px] leading-tight text-gray-500">
+                    Hand-picked and delivered in 24h.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Navigation Dots */}
-      <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-3">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setIndex(i)}
-            className={`h-3 w-3 rounded-full transition-all ${
-              i === index
-                ? 'scale-125 bg-green-400'
-                : 'bg-white/30 hover:bg-white/60'
-            }`}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
-      </div>
-    </section>
+    </div>
   );
 }
