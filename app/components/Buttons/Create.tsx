@@ -15,12 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { SyntheticEvent, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
-import {
-  Loader2,
-  PlusCircle,
-  Image as ImageIcon,
-  SquarePen,
-} from 'lucide-react';
+import { Loader2, PlusCircle, SquarePen } from 'lucide-react';
 import upsertProduct from '@/app/actions/Product/create_Update_Product.action';
 import { categories } from '@/Constant/Constant';
 
@@ -29,9 +24,9 @@ interface Props {
     id: string;
     title: string;
     description: string;
-    imageUrl: string;
+    imageUrl: string; // existing URL lang
     price: number;
-    categoryId: string; // sa DB, ID pa rin ang naka-store
+    categoryId: string;
   };
 }
 
@@ -39,11 +34,12 @@ export default function CreateOrEditProduct({ product }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState(''); // string for preview
+  const [imageFile, setImageFile] = useState<File | null>(null); // actual file
   const [price, setPrice] = useState('');
   const [loading, setLoading] = useState(false);
   const [productId, setProductId] = useState<string | undefined>(undefined);
-  const [categoryName, setCategoryName] = useState(''); // ngayon name ang ginagamit
+  const [categoryName, setCategoryName] = useState('');
 
   // Auto-fill at reset logic
   useEffect(() => {
@@ -51,16 +47,17 @@ export default function CreateOrEditProduct({ product }: Props) {
       if (product) {
         setTitle(product.title);
         setDescription(product.description);
-        setImageUrl(product.imageUrl);
         setPrice(product.price.toString());
         setProductId(product.id);
+        setImageFile(null); // no File object for existing product
+        setImageUrl(product.imageUrl); // preview
 
-        // Auto-select category by matching product.categoryId sa categories array
         const category = categories.find((c) => c.id === product.categoryId);
         setCategoryName(category ? category.name : '');
       } else {
         setTitle('');
         setDescription('');
+        setImageFile(null);
         setImageUrl('');
         setPrice('');
         setProductId(undefined);
@@ -72,8 +69,13 @@ export default function CreateOrEditProduct({ product }: Props) {
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!title || !description || !imageUrl || !price || !categoryName) {
+    // Validate: require File only if new product
+    if (!title || !description || !price || !categoryName) {
       toast.error('Please fill in all fields, including category!');
+      return;
+    }
+    if (!productId && !imageFile) {
+      toast.error('Image is required for new product!');
       return;
     }
 
@@ -83,9 +85,9 @@ export default function CreateOrEditProduct({ product }: Props) {
         id: productId,
         title,
         description,
-        imageUrl,
         price: Number(price),
-        categoryName, // name ang ipapasa sa server
+        categoryName,
+        imageUrl: imageFile || undefined, // File only if new
       });
 
       if (result.success) {
@@ -115,7 +117,7 @@ export default function CreateOrEditProduct({ product }: Props) {
             <SquarePen size={16} color="#1354ec" strokeWidth={2.25} />
           ) : (
             <>
-              <PlusCircle className="h-4 w-4" />{' '}
+              <PlusCircle className="h-4 w-4" />
               <span className="hidden lg:flex">Create Product</span>
             </>
           )}
@@ -137,24 +139,20 @@ export default function CreateOrEditProduct({ product }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Image Preview Area */}
+        {/* Image Preview */}
         <div className="bg-muted/30 flex flex-col items-center justify-center rounded-lg border border-dashed px-4 py-6">
-          {imageUrl && imageUrl.startsWith('http') ? (
-            <div className="group/image relative aspect-video w-full overflow-hidden rounded-xl border bg-white shadow-lg">
+          {imageUrl ? (
+            <div className="relative h-60 w-full overflow-hidden rounded-xl border bg-white shadow-lg">
               <Image
                 src={imageUrl}
                 alt="Preview"
                 fill
-                className="object-cover transition-transform duration-500 group-hover/image:scale-105"
-                onError={() => toast.error('Invalid Image URL')}
+                className="object-cover object-center"
               />
             </div>
           ) : (
             <div className="text-muted-foreground flex flex-col items-center py-6">
-              <ImageIcon className="h-10 w-10 opacity-20" />
-              <p className="mt-2 text-center text-xs font-medium italic">
-                Paste a valid image URL below to see preview
-              </p>
+              <span className="opacity-20">No image</span>
             </div>
           )}
           <p className="text-muted-foreground mt-3 text-[10px] font-bold tracking-widest uppercase">
@@ -165,6 +163,7 @@ export default function CreateOrEditProduct({ product }: Props) {
         <Separator />
 
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          {/* Title */}
           <div className="grid gap-2">
             <Label htmlFor="title">Product Title</Label>
             <Input
@@ -177,6 +176,7 @@ export default function CreateOrEditProduct({ product }: Props) {
             />
           </div>
 
+          {/* Category */}
           <div className="grid gap-2">
             <Label htmlFor="category">Category</Label>
             <select
@@ -198,6 +198,7 @@ export default function CreateOrEditProduct({ product }: Props) {
             </select>
           </div>
 
+          {/* Price */}
           <div className="grid gap-2">
             <Label htmlFor="price">Price (PHP)</Label>
             <Input
@@ -211,6 +212,7 @@ export default function CreateOrEditProduct({ product }: Props) {
             />
           </div>
 
+          {/* Description */}
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
             <Input
@@ -223,19 +225,25 @@ export default function CreateOrEditProduct({ product }: Props) {
             />
           </div>
 
+          {/* Image Upload */}
           <div className="grid gap-2">
-            <Label htmlFor="imageUrl">Image URL</Label>
+            <Label htmlFor="image">Image</Label>
             <Input
-              id="imageUrl"
-              type="url"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://images.unsplash.com/..."
+              id="image"
+              type="file"
+              accept="image/*"
               disabled={loading}
-              required
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setImageFile(e.target.files[0]);
+                  setImageUrl(URL.createObjectURL(e.target.files[0]));
+                }
+              }}
+              required={!productId} // required only for new product
             />
           </div>
 
+          {/* Submit */}
           <div className="flex justify-end pt-4">
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? (

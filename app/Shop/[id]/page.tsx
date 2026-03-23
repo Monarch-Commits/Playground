@@ -3,8 +3,11 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { ShoppingCart, Truck, Gift, Star, Minus, Plus } from 'lucide-react';
+import { useParams } from 'next/navigation';
 
-const ProductPage = () => {
+export default function ProductPage() {
+  const params = useParams();
+  const productId = params.id;
   const gallery = [
     { id: 1, src: '/image1.jpg', alt: 'Main Red Rose' },
     { id: 2, src: '/image2.jpg', alt: 'Rose Petals' },
@@ -65,7 +68,7 @@ const ProductPage = () => {
             <span className="flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 text-[8px]">
               R
             </span>
-            Bestseller
+            Bestseller {productId}
           </div>
 
           {/* Title */}
@@ -172,6 +175,4 @@ const ProductPage = () => {
       </div>
     </div>
   );
-};
-
-export default ProductPage;
+}
