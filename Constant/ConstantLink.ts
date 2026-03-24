@@ -20,11 +20,11 @@ export const pages: PageItem[] = [
     href: '/Shop',
     icon: MdLocalFlorist,
   },
-  {
-    name: 'Occasions',
-    href: '/occasions',
-    icon: MdLocalFlorist,
-  },
+  // {
+  //   name: 'Occasions',
+  //   href: '/occasions',
+  //   icon: MdLocalFlorist,
+  // },
 
   {
     name: 'Seller Dashboard',

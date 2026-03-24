@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { LogOut, ShoppingCart } from 'lucide-react';
+import { LogOut, Search, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { pages } from '@/Constant/ConstantLink';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -44,7 +44,7 @@ export default function DesktopNavbar() {
                 className={`font-medium transition-all duration-300 ${
                   isActive
                     ? 'scale-105 bg-pink-700 text-white'
-                    : 'text-gray-700 hover:text-pink-400'
+                    : 'text-white hover:text-pink-400'
                 }`}
               >
                 <Icon /> {p.name}
@@ -52,6 +52,15 @@ export default function DesktopNavbar() {
             </Link>
           );
         })}
+      </div>
+
+      <div className="relative hidden items-center sm:flex">
+        <input
+          type="text"
+          placeholder="Search"
+          className="w-40 rounded-full bg-orange-400 py-2 pr-10 pl-4 text-sm text-white placeholder-white/80 outline-none"
+        />
+        <Search className="absolute right-3 h-4 w-4" />
       </div>
 
       {/* User / Cart / Wishlist */}

@@ -3,9 +3,9 @@ import MobileNavbar from './Mobile-Navbar';
 
 export function Navigation() {
   return (
-    <div className="fixed top-0 z-40 flex w-full items-center justify-between border-b border-gray-100 bg-white/80 px-2 py-4 sm:px-8">
+    <nav className="fixed top-0 z-50 flex w-full items-center justify-between px-6 py-2 transition-all duration-300 md:px-16 md:py-4">
       <DesktopNavbar />
       <MobileNavbar />
-    </div>
+    </nav>
   );
 }
