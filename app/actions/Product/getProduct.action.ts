@@ -123,3 +123,18 @@ export async function getBestSellers() {
     throw error;
   }
 }
+
+// DYNAMIC LINK FOR SHOP
+
+export async function getDynamicShop(id: string) {
+  try {
+    const product = await prisma.product.findUnique({
+      where: { id },
+    });
+
+    return product;
+  } catch (error) {
+    console.error('Failed to fetch product:', error);
+    throw error;
+  }
+}

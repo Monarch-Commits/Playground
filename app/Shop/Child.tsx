@@ -52,7 +52,7 @@ export default async function Child({ category, page = 1 }: ChildProps) {
 
               <Link href={`/Shop/${p.id}`}>
                 <button className="w-full rounded-full border border-[#ff4d8d] py-2 font-medium text-[#ff4d8d] transition hover:bg-[#ff4d8d] hover:text-white">
-                  Add to Cart boy
+                  Add to Cart
                 </button>
               </Link>
             </div>
