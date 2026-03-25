@@ -2,12 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const feedImages = [
-  { id: 1, src: '/image1.jpg', alt: 'Flower story 1' },
-  { id: 2, src: '/image2.jpg', alt: 'Flower story 2' },
-  { id: 3, src: '/image3.jpg', alt: 'Flower story 3' },
-  { id: 4, src: '/image4.jpg', alt: 'Flower story 4' },
-  { id: 5, src: '/image5.jpg', alt: 'Flower story 5' },
-  { id: 6, src: '/image6.jpg', alt: 'Flower story 6' },
+  { id: 1, src: '/InstagramFeed/image1.jpg', alt: 'Flower story 1' },
+  { id: 2, src: '/InstagramFeed/image2.jpg', alt: 'Flower story 2' },
+  { id: 3, src: '/InstagramFeed/image3.jpg', alt: 'Flower story 3' },
+  { id: 4, src: '/InstagramFeed/image4.jpg', alt: 'Flower story 4' },
+  { id: 5, src: '/InstagramFeed/image5.jpg', alt: 'Flower story 5' },
+  { id: 6, src: '/InstagramFeed/image6.jpg', alt: 'Flower story 6' },
 ];
 
 export default function InstagramFeed() {

@@ -1,24 +1,28 @@
 // app/collections/page.tsx (o kung saan man ito nakalagay)
-import { Collections } from '@/app/actions/Product/getProduct.action';
 import CollectionsCard from './CollectionsCard';
-// I-import ang card component
+// Tiyakin na ang CuratedCollections ay may tamang datos
+import { CuratedCollections } from '@/Constant/Constant';
 
-export default async function CollectionParent() {
-  const data = await Collections();
-
+export default function CollectionParent() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-20">
-      {/* Header - Dito lang dapat nakalagay, hindi sa loob ng map() */}
-      <div className="mb-16 text-center">
-        <h2 className="text-4xl font-bold text-gray-900">
+    // Ginawang bg-white o bg-slate-50 para sa malinis na background
+    <section className="mx-auto max-w-7xl bg-white px-6 py-24 sm:py-32">
+      {/* Header - Mas malinis at modernong typography */}
+      <div className="mb-20 text-center">
+        <h2 className="text-4xl font-extrabold tracking-tight text-gray-950 sm:text-5xl">
           Our Curated Collections
         </h2>
-        <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-rose-500" />
+        <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600">
+          Explore our handpicked selection of premium items designed for modern
+          living.
+        </p>
+        {/* Opsyonal: Pwede mong tanggalin ang divider kung gusto mo ng ultra-minimalist */}
+        <div className="mx-auto mt-8 h-1 w-24 rounded-full bg-rose-500" />
       </div>
 
-      {/* Grid - Dito ang tamang pag-loop ng mga items */}
-      <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {data.map((p) => (
+      {/* Grid - Nadagdagan ang gap para sa mas "airy" na pakiramdam */}
+      <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 md:gap-y-16 lg:grid-cols-3">
+        {CuratedCollections.map((p) => (
           <CollectionsCard key={p.id} p={p} />
         ))}
       </div>
