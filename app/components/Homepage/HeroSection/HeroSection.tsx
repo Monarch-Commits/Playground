@@ -16,7 +16,7 @@ export default function PlantHero() {
             Nature, Delivered
           </span>
 
-          <h1 className="mb-6 text-5xl leading-tight font-semibold md:text-7xl">
+          <h1 className="mb-6 text-4xl leading-tight font-semibold md:text-6xl">
             Bring Nature <br />
             <span className="text-green-600">Closer</span>
           </h1>
@@ -35,18 +35,16 @@ export default function PlantHero() {
 
         {/* RIGHT IMAGE */}
         <div className="relative mt-10 flex items-center justify-center md:mt-0">
-          {/* Soft Card */}
-          <div className="absolute h-[80%] w-[85%] rounded-[40px] bg-gray-100" />
-
+          <div className="absolute h-[80%] w-[85%] rounded-[50%] bg-green-400/50 shadow-xl blur-[60px]" />
           {/* Plant Image */}
           <div className="relative z-10">
             <Image
-              src="/plants/s.png"
+              src="/plants/imageforhero.png"
               alt="Plant"
               width={600}
               height={700}
               priority
-              className="object-contain drop-shadow-[0_30px_30px_rgba(0,0,0,0.15)] transition-transform duration-700 hover:scale-105"
+              className="object-contain drop-shadow-[0_30px_30px_rgba(0,0,0,0.15)]"
             />
           </div>
         </div>

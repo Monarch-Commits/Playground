@@ -4,15 +4,14 @@ import syncUser from '../User/syncUser.action';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import cloudinary from '@/lib/cloudinary';
-import { UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
 
 interface Product {
-  imageUrl?: File; // <-- optional na ngayon
+  imageUrl?: File;
   title: string;
   description: string;
   price: number;
   id?: string;
-  categoryName: string; // changed from categoryId
+  categoryName: string;
 }
 
 interface CloudinaryUploadResult {
@@ -31,76 +30,79 @@ export default async function upsertProduct({
   const dbUser = await syncUser();
   if (!dbUser) redirect('/api/auth/login');
 
-  if (!imageUrl || imageUrl.size === 0) {
-    throw new Error('Image is required');
-  }
-
-  // Hanapin ang category id gamit ang name
   const category = await prisma.category.findUnique({
     where: { name: categoryName },
   });
-
-  const arrayBuffer = await imageUrl.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-
-  // Upload sa Cloudinary
-  const uploadResult = await new Promise<CloudinaryUploadResult>(
-    (resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          { folder: 'e-commerce flower products' },
-          (
-            error: UploadApiErrorResponse | undefined,
-            result: UploadApiResponse | undefined,
-          ) => {
-            if (error) reject(error);
-            else if (!result?.secure_url)
-              reject(new Error('Cloudinary upload failed'));
-            else resolve(result as CloudinaryUploadResult);
-          },
-        )
-        .end(buffer);
-    },
-  );
-
   if (!category) throw new Error('Invalid category');
+
+  let finalImageUrl: string | undefined;
+
+  // Conditional Upload
+  if (imageUrl && imageUrl.size > 0) {
+    const arrayBuffer = await imageUrl.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const uploadResult = await new Promise<CloudinaryUploadResult>(
+      (resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            { folder: 'e-commerce flower products' },
+            (error, result) => {
+              if (error) reject(error);
+              else if (!result) reject(new Error('Cloudinary upload failed'));
+              else resolve(result as CloudinaryUploadResult);
+            },
+          )
+          .end(buffer);
+      },
+    );
+    finalImageUrl = uploadResult.secure_url;
+  }
 
   try {
     let result;
 
     if (id) {
-      // Update existing product
+      // UPDATE
       result = await prisma.product.update({
         where: { id },
         data: {
           title,
           description,
-          imageUrl: uploadResult.secure_url,
           price: Math.floor(price),
           categoryId: category.id,
+          ...(finalImageUrl && { imageUrl: finalImageUrl }),
         },
       });
     } else {
-      // Create new product
+      // CREATE
+      if (!finalImageUrl) throw new Error('Image is required for new products');
+
       result = await prisma.product.create({
         data: {
           userId: dbUser.id,
           title,
           description,
-          imageUrl: uploadResult.secure_url,
+          imageUrl: finalImageUrl,
           price: Math.floor(price),
           categoryId: category.id,
         },
       });
     }
 
+    // Tawagin ito para sa parehong Create at Update
     revalidatePath('/Shop');
     revalidatePath('/SellerDashboard');
     revalidatePath('/');
-    return { success: true, data: result, wasCreated: !id };
+
+    return {
+      success: true,
+      data: result,
+      wasCreated: !id, // true kung walang id (create), false kung meron (update)
+    };
   } catch (error) {
-    console.error('Failed to create/update product:', error);
-    throw error;
+    console.error('Upsert Error:', error);
+    return { success: false, error: 'Failed to save product' };
   }
 }
 
@@ -111,11 +113,15 @@ export async function ensureCategories() {
   if (count === 0) {
     await prisma.category.createMany({
       data: [
-        { id: 'bouquets', name: 'Bouquets' },
-        { id: 'birthday', name: 'Birthday' },
-        { id: 'wedding', name: 'Wedding' },
-        { id: 'anniversary', name: 'Anniversary' },
-        { id: 'funeral', name: 'Funeral' },
+        // 🌿 Plant Curated Collections
+        { id: 'indoor', name: 'Indoor Plants' },
+        { id: 'outdoor', name: 'Outdoor Plants' },
+        { id: 'beginner', name: 'Beginner Friendly' },
+        { id: 'low-maintenance', name: 'Low Maintenance' },
+        { id: 'flowering', name: 'Flowering Plants' },
+        { id: 'air-purifying', name: 'Air Purifying Plants' },
+        { id: 'small-space', name: 'Small Space Plants' },
+        { id: 'pet-friendly', name: 'Pet Friendly Plants' },
       ],
     });
   }

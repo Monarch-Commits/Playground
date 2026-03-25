@@ -9,7 +9,7 @@ export default async function BestSellersSection() {
   return (
     // Ginawa nating w-full at tinanggal ang max-w-7xl
     <section className="w-full px-8 py-12">
-      <div className="mb-10 flex items-end justify-between">
+      <div className="mb-10 flex flex-col items-end justify-between gap-3 sm:flex-row">
         <div>
           <h2 className="text-4xl font-bold tracking-tight text-[#1a2b3c]">
             Best Selling Bouquets
@@ -19,7 +19,7 @@ export default async function BestSellersSection() {
           </p>
         </div>
         <Link
-          href="#"
+          href="/Shop"
           className="text-sm font-bold text-[#ff4d8d] hover:underline"
         >
           View All Products
@@ -27,7 +27,7 @@ export default async function BestSellersSection() {
       </div>
 
       {/* Siguraduhing w-full din ang grid */}
-      <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid w-full grid-cols-2 gap-6 lg:grid-cols-5">
         {bestSell?.map((bs) => (
           <BestSellersCard key={bs.id} bs={bs} />
         ))}

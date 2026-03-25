@@ -94,47 +94,17 @@ export async function productShop(
   }
 }
 
-// HOME COLLECTIONS
-export async function Collections() {
-  try {
-    const products = await prisma.product.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-    });
-    console.log('Fetched products:', products);
-    return products;
-  } catch (error) {
-    console.error('Failed to fetch products:', error);
-    throw error;
-  }
-}
-
 // HOME BEST SELLERS
 export async function getBestSellers() {
   try {
     const products = await prisma.product.findMany({
       orderBy: { createdAt: 'desc' },
-      take: 4,
+      take: 5,
     });
     console.log('Fetched getBestSellers:', products);
     return products;
   } catch (error) {
     console.error('Failed to fetch products:', error);
-    throw error;
-  }
-}
-
-// DYNAMIC LINK FOR SHOP
-
-export async function getDynamicShop(id: string) {
-  try {
-    const product = await prisma.product.findUnique({
-      where: { id },
-    });
-
-    return product;
-  } catch (error) {
-    console.error('Failed to fetch product:', error);
     throw error;
   }
 }

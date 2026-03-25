@@ -1,12 +1,17 @@
 // Category
 export const categories = [
   { id: 'all', name: 'All' },
-  { id: 'bouquets', name: 'Bouquets' },
-  { id: 'birthday', name: 'Birthday' },
-  { id: 'wedding', name: 'Wedding' },
-  { id: 'anniversary', name: 'Anniversary' },
-  { id: 'funeral', name: 'Funeral' },
-];
+
+  // 🌿 Plant Collections
+  { id: 'indoor', name: 'Indoor Plants' },
+  { id: 'outdoor', name: 'Outdoor Plants' },
+  { id: 'beginner', name: 'Beginner Friendly' },
+  { id: 'low-maintenance', name: 'Low Maintenance' },
+  { id: 'flowering', name: 'Flowering Plants' },
+  { id: 'air-purifying', name: 'Air Purifying Plants' },
+  { id: 'small-space', name: 'Small Space Plants' },
+  { id: 'pet-friendly', name: 'Pet Friendly Plants' },
+] as const;
 
 // Curated Collections
 export const CuratedCollections = [

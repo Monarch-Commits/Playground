@@ -111,7 +111,7 @@ export default function CreateOrEditProduct({ product }: Props) {
       <DialogTrigger asChild>
         <Button
           variant={product ? 'outline' : 'default'}
-          className="z-50 gap-2"
+          className="z-10 gap-2"
         >
           {product ? (
             <SquarePen size={16} color="#1354ec" strokeWidth={2.25} />
