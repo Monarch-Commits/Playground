@@ -56,7 +56,7 @@ export async function getSellerProduct(
 export async function productShop(
   category?: string,
   page: number = 1,
-  limit: number = 5,
+  limit: number = 10,
 ) {
   try {
     const skip = (page - 1) * limit;

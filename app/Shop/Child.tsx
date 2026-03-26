@@ -46,7 +46,7 @@ export default async function Child({ category, page = 1 }: ChildProps) {
               <p className="mb-2 line-clamp-2 h-10 text-sm text-gray-600">
                 {p.description}
               </p>
-              <p className="md:text-md mb-4 text-xs font-bold text-[#ff4d8d]">
+              <p className="sm:text-md mb-4 text-xs font-bold text-[#ff4d8d]">
                 ₱ {p.price.toLocaleString()}
               </p>
 
