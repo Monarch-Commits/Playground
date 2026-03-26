@@ -8,7 +8,7 @@ export default async function BestSellersSection() {
 
   return (
     // Ginawa nating w-full at tinanggal ang max-w-7xl
-    <section className="w-full px-8 py-12">
+    <section className="w-full px-4 py-12 sm:px-8">
       <div className="mb-10 flex flex-col items-end justify-between gap-3 sm:flex-row">
         <div>
           <h2 className="text-4xl font-bold tracking-tight text-[#1a2b3c]">
@@ -27,7 +27,7 @@ export default async function BestSellersSection() {
       </div>
 
       {/* Siguraduhing w-full din ang grid */}
-      <div className="grid w-full grid-cols-2 gap-6 lg:grid-cols-5">
+      <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-6 lg:grid-cols-6">
         {bestSell?.map((bs) => (
           <BestSellersCard key={bs.id} bs={bs} />
         ))}

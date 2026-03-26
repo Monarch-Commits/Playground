@@ -1,7 +1,6 @@
 'use server';
 
 import prisma from '@/app/lib/prisma';
-
 import { redirect } from 'next/navigation';
 import syncUser from '../User/syncUser.action';
 import { Prisma } from '@/lib/generated/prisma/client';
@@ -99,7 +98,7 @@ export async function getBestSellers() {
   try {
     const products = await prisma.product.findMany({
       orderBy: { createdAt: 'desc' },
-      take: 5,
+      take: 6,
     });
     console.log('Fetched getBestSellers:', products);
     return products;

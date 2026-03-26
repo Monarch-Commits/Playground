@@ -14,7 +14,7 @@ export default function BestSellersCard({ bs }: { bs: BestSell }) {
       className="group relative overflow-hidden rounded-3xl border border-gray-200 bg-white/70 p-4 shadow-md backdrop-blur-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
     >
       {/* 🔥 Badge */}
-      <span className="absolute top-4 left-4 z-10 rounded-full bg-[#ff4d8d] px-3 py-1 text-xs font-semibold text-white shadow">
+      <span className="absolute top-4 left-4 z-10 hidden rounded-full bg-[#ff4d8d] px-3 py-1 text-xs font-semibold text-white shadow md:block">
         Best Seller
       </span>
 
