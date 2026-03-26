@@ -16,7 +16,7 @@ export default async function Child({ category, page = 1 }: ChildProps) {
   return (
     <>
       {/* Product Grid */}
-      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-5 md:grid-cols-4 lg:grid-cols-5">
         {products.length > 0 ? (
           products.map((p) => (
             <div
@@ -31,7 +31,7 @@ export default async function Child({ category, page = 1 }: ChildProps) {
                   sizes="(max-width: 768px) 100vw, 20vw"
                   className="object-cover transition group-hover:scale-105"
                 />
-                <Heart className="absolute top-3 right-3 cursor-pointer text-white transition hover:fill-red-500" />
+                <Heart className="absolute top-2 right-2 cursor-pointer fill-gray-500 text-white transition hover:fill-red-500" />
               </div>
               <h3 className="truncate font-bold text-[#1a2b3c]">{p.title}</h3>
               <div className="my-1 flex items-center gap-1">
