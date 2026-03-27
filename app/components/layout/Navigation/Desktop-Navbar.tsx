@@ -59,7 +59,7 @@ export default function DesktopNavbar() {
         {/* Conditional User / Sign In */}
         {user ? (
           <div className="flex items-center gap-6">
-            <Link href="/cart">
+            <Link href="/Cart">
               <ShoppingCart size={20} />
             </Link>
 
