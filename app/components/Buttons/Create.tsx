@@ -26,6 +26,7 @@ interface Props {
     description: string;
     imageUrl: string; // existing URL lang
     price: number;
+    stock: number;
     categoryId: string;
   };
 }
@@ -37,6 +38,7 @@ export default function CreateOrEditProduct({ product }: Props) {
   const [imageUrl, setImageUrl] = useState(''); // string for preview
   const [imageFile, setImageFile] = useState<File | null>(null); // actual file
   const [price, setPrice] = useState('');
+  const [stock, setStock] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [productId, setProductId] = useState<string | undefined>(undefined);
   const [categoryName, setCategoryName] = useState('');
@@ -48,6 +50,7 @@ export default function CreateOrEditProduct({ product }: Props) {
         setTitle(product.title);
         setDescription(product.description);
         setPrice(product.price.toString());
+        setStock(product.stock);
         setProductId(product.id);
         setImageFile(null); // no File object for existing product
         setImageUrl(product.imageUrl); // preview
@@ -60,6 +63,7 @@ export default function CreateOrEditProduct({ product }: Props) {
         setImageFile(null);
         setImageUrl('');
         setPrice('');
+        setStock(0);
         setProductId(undefined);
         setCategoryName('');
       }
@@ -85,6 +89,7 @@ export default function CreateOrEditProduct({ product }: Props) {
         id: productId,
         title,
         description,
+        stock,
         price: Number(price),
         categoryName,
         imageUrl: imageFile || undefined, // File only if new
@@ -240,6 +245,18 @@ export default function CreateOrEditProduct({ product }: Props) {
                 }
               }}
               required={!productId} // required only for new product
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="stock">Stock</Label>
+            <Input
+              id="stock"
+              type="number" // ✅ important
+              value={stock}
+              onChange={(e) => setStock(Number(e.target.value))} // ✅ convert to number
+              placeholder="Enter stock quantity"
+              disabled={loading}
+              required
             />
           </div>
 

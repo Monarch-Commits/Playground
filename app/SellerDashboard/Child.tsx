@@ -56,9 +56,13 @@ export default async function Child({ category, page = 1 }: ChildProps) {
               <p className="mb-2 line-clamp-2 h-10 text-sm text-gray-600">
                 {p.description}
               </p>
-              <p className="mb-4 font-bold text-[#ff4d8d]">
-                ₱ {p.price.toLocaleString()}
-              </p>
+              <div className="flex justify-between">
+                <p className="mb-4 font-bold text-[#ff4d8d]">
+                  ₱ {p.price.toLocaleString()}
+                </p>
+                <p className="mb-4 font-bold">{p.stock} in stock</p>
+              </div>
+
               <div className="flex items-center gap-3">
                 <Avatar size="sm" className="border">
                   {p ? (

@@ -9,9 +9,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { ShoppingCart, Truck, Gift, Star, Minus, Plus } from 'lucide-react';
+import { Truck, Gift, Star, Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/lib/generated/prisma/client';
+import AddToCartButton from '@/app/components/Buttons/AddToCartButton';
 
 interface ShopChildProps {
   product: Product | null;
@@ -69,9 +70,12 @@ export default function ShopChild({ product }: ShopChildProps) {
           </h1>
 
           {/* Price */}
-          <p className="text-2xl font-semibold text-pink-600">
-            ${product.price}
-          </p>
+          <div className="flex justify-between">
+            <p className="mb-4 font-bold text-[#ff4d8d]">
+              ₱ {product.price.toLocaleString()}
+            </p>
+            <p className="mb-4 font-bold">Stock: {product.stock} </p>
+          </div>
 
           {/* Rating */}
           <div className="flex items-center gap-3">
@@ -118,9 +122,7 @@ export default function ShopChild({ product }: ShopChildProps) {
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row">
-            <button className="flex flex-[1.5] items-center justify-center gap-2 rounded-full bg-pink-500 py-4 font-bold text-white shadow hover:bg-pink-600 active:scale-95">
-              <ShoppingCart size={20} /> Add to Cart
-            </button>
+            <AddToCartButton productId={product.id} quantity={quantity} />
             <button className="flex-1 rounded-full border-2 border-pink-500 py-4 font-bold text-pink-500 hover:bg-pink-50 active:scale-95">
               Buy Now
             </button>

@@ -11,6 +11,7 @@ interface Product {
   description: string;
   price: number;
   id?: string;
+  stock: number;
   categoryName: string;
 }
 
@@ -24,6 +25,7 @@ export default async function upsertProduct({
   imageUrl,
   title,
   description,
+  stock,
   price,
   categoryName,
 }: Product) {
@@ -69,6 +71,7 @@ export default async function upsertProduct({
         data: {
           title,
           description,
+          stock: Math.floor(stock),
           price: Math.floor(price),
           categoryId: category.id,
           ...(finalImageUrl && { imageUrl: finalImageUrl }),
@@ -84,6 +87,7 @@ export default async function upsertProduct({
           title,
           description,
           imageUrl: finalImageUrl,
+          stock: Math.floor(stock),
           price: Math.floor(price),
           categoryId: category.id,
         },

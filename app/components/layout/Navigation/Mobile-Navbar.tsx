@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { IoMenuSharp } from 'react-icons/io5';
-import { ShoppingBag, LogOut } from 'lucide-react';
+import { LogOut, ShoppingCart } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   LoginLink,
@@ -58,11 +58,8 @@ export default function MobileNavbar() {
             {user ? (
               <div className="flex flex-col items-start gap-3">
                 <div className="flex items-center gap-3">
-                  <Link
-                    href="/cart"
-                    className="rounded-full bg-pink-50 p-2 text-pink-500 transition-colors hover:bg-pink-100"
-                  >
-                    <ShoppingBag size={20} />
+                  <Link href="/Cart">
+                    <ShoppingCart size={20} />
                   </Link>
                 </div>
 

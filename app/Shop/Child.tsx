@@ -46,9 +46,12 @@ export default async function Child({ category, page = 1 }: ChildProps) {
               <p className="mb-2 line-clamp-2 h-10 text-sm text-gray-600">
                 {p.description}
               </p>
-              <p className="sm:text-md mb-4 text-xs font-bold text-[#ff4d8d]">
-                ₱ {p.price.toLocaleString()}
-              </p>
+              <div className="flex justify-between">
+                <p className="mb-4 font-bold text-[#ff4d8d]">
+                  ₱ {p.price.toLocaleString()}
+                </p>
+                <p className="mb-4 font-bold">{p.stock} in stock</p>
+              </div>
 
               <Link href={`/Shop/${p.id}`}>
                 <button className="w-full rounded-full border border-[#ff4d8d] py-3 text-sm font-semibold tracking-wide text-[#ff4d8d] transition-all duration-300 hover:bg-[#ff4d8d] hover:text-white hover:shadow-md">
