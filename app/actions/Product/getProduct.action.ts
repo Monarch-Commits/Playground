@@ -25,7 +25,6 @@ export async function getSellerProduct(
         }),
     };
 
-    // Sabay na patakbuhin ang pagkuha ng data at pagbilang
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where: whereClause,

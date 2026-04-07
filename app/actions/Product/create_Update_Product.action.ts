@@ -77,6 +77,9 @@ export default async function upsertProduct({
           ...(finalImageUrl && { imageUrl: finalImageUrl }),
         },
       });
+      revalidatePath('/Shop');
+      revalidatePath('/SellerDashboard');
+      revalidatePath('/');
     } else {
       // CREATE
       if (!finalImageUrl) throw new Error('Image is required for new products');
