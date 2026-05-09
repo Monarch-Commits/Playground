@@ -1,10 +1,11 @@
 import { Suspense } from 'react';
 
-import ShopSkeleton from '../components/Skeleton/Skeleton';
+import ShopSkeleton from '../../components/Skeleton/Skeleton';
 import Link from 'next/link';
 import { categories } from '@/Constant/Constant';
 import Child from './Child';
-import CreateOrEditProduct from '../components/Buttons/Create';
+import CreateOrEditProduct from '@/components/Buttons/Create';
+
 export default async function Page({
   searchParams,
 }: {

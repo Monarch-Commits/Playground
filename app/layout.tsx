@@ -3,8 +3,8 @@ import { Poppins } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from './AuthProvider';
 import { Toaster } from 'react-hot-toast';
-import { Navigation } from './components/layout/Navigation/Nav';
-import Footer from './components/layout/Footer/Footer';
+import { Navigation } from '../components/layout/Navigation/Nav';
+import Footer from '../components/layout/Footer/Footer';
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description:
     'Discover and shop beautiful plants for your home and garden. Fresh, healthy, and delivered with care.',
   icons: {
-    icon: '/logo/logo.png',
+    icon: '/logo/DarkRose.svg',
   },
   openGraph: {
     title: 'Plant E-Commerce 🌱',
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: 'Plant E-Commerce',
     images: [
       {
-        url: '/logo/logo.png',
+        url: '/logo/DarkRose.svg',
         width: 1200,
         height: 630,
         alt: 'Plant E-Commerce Preview',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     title: 'Plant E-Commerce 🌱',
     description:
       'Shop high-quality plants and bring nature closer to your home.',
-    images: ['/logo/logo.png'],
+    images: ['/logo/DarkRose.svg'],
   },
 };
 

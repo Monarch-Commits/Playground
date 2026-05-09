@@ -22,7 +22,7 @@ export default function DesktopNavbar() {
       <div>
         <Link href="/">
           <Image
-            src="/logo/logo.png"
+            src="/logo/Rose.svg"
             alt="Logo"
             width={180}
             height={100}
@@ -38,18 +38,19 @@ export default function DesktopNavbar() {
           const isActive = pathname === p.href;
 
           return (
-            <Link key={index} href={p.href}>
-              <Button
-                variant="ghost"
-                className={`font-medium transition-all duration-300 ${
-                  isActive
-                    ? 'scale-105 bg-pink-700 text-white'
-                    : 'hover:text-pink-400'
-                }`}
-              >
+            <Button
+              key={index}
+              className={`font-medium transition-all duration-300 ${
+                isActive
+                  ? 'scale-105 bg-pink-700 text-white'
+                  : 'hover:text-pink-400'
+              }`}
+              variant="ghost"
+            >
+              <Link className="flex items-center gap-2" href={p.href}>
                 <Icon /> {p.name}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           );
         })}
       </div>

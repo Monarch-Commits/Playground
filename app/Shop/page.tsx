@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import Child from './Child';
-import ShopSkeleton from '../components/Skeleton/Skeleton';
+import ShopSkeleton from '../../components/Skeleton/Skeleton';
 import Link from 'next/link';
 import { categories } from '@/Constant/Constant';
-import { ensureCategories } from '../actions/Product/create_Update_Product.action';
+// import { ensureCategories } from '../actions/Product/create_Update_Product.action';
 
 export default async function Page({
   searchParams,
@@ -11,7 +11,7 @@ export default async function Page({
   searchParams: Promise<{ category?: string; page?: string }>;
 }) {
   const params = await searchParams;
-  await ensureCategories();
+  // await ensureCategories();
   console.log('✅ Categories seeded');
 
   // Siguraduhin na ang category ay may default, at ang page ay Number

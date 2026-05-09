@@ -12,7 +12,7 @@ import {
 import { Truck, Gift, Star, Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/lib/generated/prisma/client';
-import AddToCartButton from '@/app/components/Buttons/AddToCartButton';
+import AddToCartButton from '@/components/Buttons/AddToCartButton';
 
 interface ShopChildProps {
   product: Product | null;

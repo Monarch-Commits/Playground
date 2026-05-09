@@ -3,10 +3,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, Star } from 'lucide-react';
 
-import DeleteButton from '../components/Buttons/DeleteButton';
-import CreateOrEditProduct from '../components/Buttons/Create';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { getSellerProduct } from '../actions/Product/getProduct.action';
+import CreateOrEditProduct from '@/components/Buttons/Create';
+import DeleteButton from '@/components/Buttons/DeleteButton';
 
 interface ChildProps {
   category: string;
