@@ -16,6 +16,7 @@ import { usePathname } from 'next/navigation';
 export default function DesktopNavbar() {
   const { user } = useKindeBrowserClient(); // add signIn & signOut
   const pathname = usePathname();
+  const isActive = pathname === '/Cart';
 
   return (
     <div className="relative flex w-full items-center justify-between">
@@ -60,7 +61,14 @@ export default function DesktopNavbar() {
         {/* Conditional User / Sign In */}
         {user ? (
           <div className="flex items-center gap-6">
-            <Link href="/Cart">
+            <Link
+              href="/Cart"
+              className={`rounded-full p-2 text-center font-medium transition-all duration-300 ${
+                isActive
+                  ? 'scale-105 bg-pink-700 text-white'
+                  : 'hover:text-pink-400'
+              }`}
+            >
               <ShoppingCart size={20} />
             </Link>
 

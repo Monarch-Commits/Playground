@@ -31,9 +31,9 @@ export const pages: PageItem[] = [
     href: '/SellerDashboard',
     icon: GoBriefcase,
   },
-  {
-    name: 'Test',
-    href: '/Test',
-    icon: GoBriefcase,
-  },
+  // {
+  //   name: 'Test',
+  //   href: '/Test',
+  //   icon: GoBriefcase,
+  // },
 ];

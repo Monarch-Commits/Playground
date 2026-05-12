@@ -14,7 +14,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Plant E-Commerce 🌱',
+    default: 'Plant E-Commerce',
     template: '%s | Plant E-Commerce',
   },
   description:
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     icon: '/logo/DarkRose.svg',
   },
   openGraph: {
-    title: 'Plant E-Commerce 🌱',
+    title: 'Plant E-Commerce',
     description:
       'Shop high-quality plants and bring nature closer to your home.',
     url: 'https://yourdomain.com',
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Plant E-Commerce 🌱',
+    title: 'Plant E-Commerce',
     description:
       'Shop high-quality plants and bring nature closer to your home.',
     images: ['/logo/DarkRose.svg'],
