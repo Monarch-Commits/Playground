@@ -19,7 +19,7 @@ export default async function Page({
 
   const allCategories = categories;
   return (
-    <section className="mx-auto my-10 max-w-7xl px-6 py-16">
+    <section className="mx-auto my-10 max-w-7xl px-2 py-2 sm:px-6">
       <div className="mb-12 flex justify-between text-start">
         <div>
           <h2 className="mb-4 text-4xl font-bold text-[#1a2b3c]">Shop</h2>

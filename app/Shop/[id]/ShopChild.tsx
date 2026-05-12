@@ -12,7 +12,7 @@ import {
 import { Truck, Gift, Star, Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/lib/generated/prisma/client';
-import AddToCartButton from '@/components/Buttons/AddToCartButton';
+// import AddToCartButton from '@/components/Buttons/AddToCartButton';
 
 interface ShopChildProps {
   product: Product | null;
@@ -122,7 +122,7 @@ export default function ShopChild({ product }: ShopChildProps) {
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row">
-            <AddToCartButton productId={product.id} quantity={quantity} />
+            {/* <AddToCartButton productId={product.id} quantity={quantity} /> */}
             <button className="flex-1 rounded-full border-2 border-pink-500 py-4 font-bold text-pink-500 hover:bg-pink-50 active:scale-95">
               Buy Now
             </button>

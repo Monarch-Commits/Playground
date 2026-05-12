@@ -1,8 +1,9 @@
 // Alisin ang 'use client' – gagawin nating Server Component ito
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, Star } from 'lucide-react';
+import { Heart, ShoppingCart, Star } from 'lucide-react';
 import { productShop } from '../actions/Product/getProduct.action';
+import AddToCartButton from '@/components/Buttons/AddToCartButton';
 
 interface ChildProps {
   category: string;
@@ -34,7 +35,7 @@ export default async function Child({ category, page = 1 }: ChildProps) {
                 <Heart className="absolute top-2 right-2 cursor-pointer fill-gray-500 text-white transition hover:fill-red-500" />
               </div>
               <h3 className="truncate font-bold text-[#1a2b3c]">{p.title}</h3>
-              <div className="my-1 flex items-center gap-1">
+              {/* <div className="my-1 flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
@@ -42,22 +43,30 @@ export default async function Child({ category, page = 1 }: ChildProps) {
                     className="fill-yellow-400 text-yellow-400"
                   />
                 ))}
-              </div>
-              <p className="mb-2 line-clamp-2 h-10 text-sm text-gray-600">
+              </div> */}
+              <p className="mb-1 line-clamp-2 min-h-[40px] text-xs leading-relaxed text-gray-500 sm:text-sm">
                 {p.description}
               </p>
+
+              {/* Show More */}
+              <Link
+                href={`/Shop/${p.id}`}
+                className="mb-3 inline-block text-xs font-medium text-[#ff4d8d] transition hover:underline"
+              >
+                Show More
+              </Link>
               <div className="flex justify-between">
                 <p className="mb-4 font-bold text-[#ff4d8d]">
                   ₱ {p.price.toLocaleString()}
                 </p>
-                <p className="mb-4 font-bold">{p.stock} in stock</p>
+                {/* <p className="mb-4 font-bold">{p.stock} in stock</p> */}
               </div>
-
-              <Link href={`/Shop/${p.id}`}>
-                <button className="w-full rounded-full border border-[#ff4d8d] py-3 text-sm font-semibold tracking-wide text-[#ff4d8d] transition-all duration-300 hover:bg-[#ff4d8d] hover:text-white hover:shadow-md">
-                  Add to Cart
-                </button>
-              </Link>
+              <div className="flex items-center gap-4">
+                <Link href={`/Shop/${p.id}`}>
+                  <ShoppingCart className="text-green-700" />
+                </Link>
+                <AddToCartButton productId={p.id} />
+              </div>
             </div>
           ))
         ) : (

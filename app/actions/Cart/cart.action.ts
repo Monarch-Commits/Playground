@@ -3,133 +3,188 @@
 import prisma from '@/app/lib/prisma';
 import syncUser from '../User/syncUser.action';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
-interface OrderInput {
-  productId: string;
-  quantity: number;
-}
-
-export async function cart({ productId, quantity }: OrderInput) {
-  const dbUser = await syncUser();
-  if (!dbUser) redirect('/api/auth/login');
-
-  // ✅ validation
-  if (!productId || quantity <= 0) {
-    return { success: false, error: 'Invalid input' };
-  }
+// ADD TO CART
+export async function addToCart(productId: string) {
+  const user = await syncUser();
+  if (!user) redirect('/api/auth/login');
 
   try {
-    return await prisma.$transaction(async (tx) => {
-      // ✅ get product
+    await prisma.$transaction(async (tx) => {
       const product = await tx.product.findUnique({
         where: { id: productId },
       });
 
-      if (!product) {
-        return { success: false, error: 'Product not found' };
-      }
+      if (!product) throw new Error('Product not found');
 
-      // ✅ stock check
-      if (product.stock < quantity) {
-        return { success: false, error: 'Not enough stock' };
-      }
-
-      // ✅ UPSERT CART (no duplicates, atomic)
-      const cart = await tx.order.upsert({
-        where: {
-          userId_status: {
-            userId: dbUser.id,
-            status: 'pending',
-          },
-        },
-        update: {},
-        create: {
-          userId: dbUser.id,
-          status: 'pending',
-        },
+      let cart = await tx.cart.findUnique({
+        where: { userId: user.id },
       });
 
-      // ✅ UPSERT ORDER ITEM (no duplicates, atomic)
-      await tx.orderItem.upsert({
+      if (!cart) {
+        cart = await tx.cart.create({
+          data: { userId: user.id },
+        });
+      }
+
+      await tx.cartItem.upsert({
         where: {
-          orderId_productId: {
-            orderId: cart.id,
+          cartId_productId: {
+            cartId: cart.id,
             productId,
           },
         },
         update: {
-          quantity: {
-            increment: quantity,
-          },
+          quantity: { increment: 1 },
         },
         create: {
-          orderId: cart.id,
+          cartId: cart.id,
           productId,
-          quantity,
+          quantity: 1,
         },
       });
-
-      // ✅ (optional) update total
-      await tx.order.update({
-        where: { id: cart.id },
-        data: {
-          total: {
-            increment: product.price * quantity,
-          },
-        },
-      });
-
-      return {
-        success: true,
-        message: 'Added to cart',
-        cartId: cart.id,
-      };
     });
+
+    revalidatePath('/cart');
+
+    return { success: true };
   } catch (error) {
-    console.error('Cart Error:', error);
+    console.error(error);
     return { success: false, error: 'Failed to add to cart' };
   }
 }
 
+// GET CART
 export async function getCart() {
-  const dbUser = await syncUser();
-  if (!dbUser) redirect('/api/auth/login');
+  const user = await syncUser();
+  if (!user) throw new Error('Unauthorized');
 
   try {
-    const cart = await prisma.order.findFirst({
-      where: {
-        userId: dbUser.id,
-        status: 'pending',
-      },
+    const cart = await prisma.cart.findUnique({
+      where: { userId: user.id },
       include: {
         items: {
-          include: {
-            product: true,
-          },
+          include: { product: true },
         },
       },
     });
 
-    // ✅ TRANSFORM DATA
-    const formattedItems =
-      cart?.items?.map((item) => ({
-        id: item.id,
-        name: item.product.title,
-        description: item.product.description,
-        price: item.product.price,
-        quantity: item.quantity,
-        image: item.product.imageUrl,
-      })) || [];
-
     return {
       success: true,
-      data: formattedItems,
+      items: cart?.items ?? [],
     };
   } catch (error) {
-    console.error('Get Cart Error:', error);
-    return {
-      success: false,
-      error: 'Failed to fetch cart',
-    };
+    console.error(error);
+    return { success: false, error: 'Failed to fetch cart', items: [] };
   }
+}
+
+// INCREASE QTY
+export async function increaseQuantity(productId: string) {
+  const user = await syncUser();
+  if (!user) throw new Error('Unauthorized');
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const cart = await tx.cart.findUnique({
+        where: { userId: user.id },
+      });
+
+      if (!cart) return;
+
+      await tx.cartItem.update({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId,
+          },
+        },
+        data: {
+          quantity: { increment: 1 },
+        },
+      });
+    });
+
+    revalidatePath('/cart');
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// DECREASE QTY
+export async function decreaseQuantity(productId: string) {
+  const user = await syncUser();
+  if (!user) throw new Error('Unauthorized');
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const cart = await tx.cart.findUnique({
+        where: { userId: user.id },
+      });
+
+      if (!cart) return;
+
+      const item = await tx.cartItem.findUnique({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId,
+          },
+        },
+      });
+
+      if (!item) return;
+
+      if (item.quantity <= 1) {
+        await tx.cartItem.delete({
+          where: {
+            cartId_productId: {
+              cartId: cart.id,
+              productId,
+            },
+          },
+        });
+      } else {
+        await tx.cartItem.update({
+          where: {
+            cartId_productId: {
+              cartId: cart.id,
+              productId,
+            },
+          },
+          data: {
+            quantity: { decrement: 1 },
+          },
+        });
+      }
+    });
+
+    revalidatePath('/cart');
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// REMOVE ITEM
+export async function removeItem(productId: string) {
+  const user = await syncUser();
+  if (!user) throw new Error('Unauthorized');
+
+  const cart = await prisma.cart.findUnique({
+    where: { userId: user.id },
+  });
+
+  if (!cart) return;
+
+  await prisma.cartItem.delete({
+    where: {
+      cartId_productId: {
+        cartId: cart.id,
+        productId,
+      },
+    },
+  });
+
+  revalidatePath('/cart');
 }
