@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { ArrowRight, Instagram, Facebook, Twitter } from 'lucide-react';
-
+import Link from 'next/link';
 export default function PlantHero() {
   return (
     <section className="relative flex min-h-screen w-full flex-col overflow-hidden text-[#1d1d1f]">
@@ -28,10 +28,13 @@ export default function PlantHero() {
 
         {/* CTA BUTTONS - Apple uses pill shape and clean text */}
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
-          <button className="group flex items-center gap-2 rounded-full bg-[#0071e3] px-8 py-3.5 text-[17px] font-semibold text-white transition-all hover:bg-[#0077ed] active:scale-95">
+          <Link
+            href="/Shop"
+            className="group flex items-center gap-2 rounded-full bg-[#0071e3] px-8 py-3.5 text-[17px] font-semibold text-white transition-all hover:bg-[#0077ed] active:scale-95"
+          >
             Shop Collection
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </button>
+          </Link>
           <a
             href="#"
             className="text-[17px] font-medium text-[#0066cc] underline-offset-4 hover:underline"

@@ -1,11 +1,13 @@
 // components/Homepage/CollectionsSection/CollectionsCard.tsx
-import Image from 'next/image';
 
+import Image from 'next/image';
+import Link from 'next/link';
 interface Project {
   id: string;
   title: string;
   description: string;
   image: string;
+  href: string;
 }
 
 export default function CollectionsCard({ p }: { p: Project }) {
@@ -42,16 +44,19 @@ export default function CollectionsCard({ p }: { p: Project }) {
         </p>
 
         {/* Modernong Button Style */}
-        <button className="group/btn mt-5 flex items-center gap-2 text-sm font-semibold text-rose-500">
+        <Link
+          href={`/Shop?category=${encodeURIComponent(p.title)}&page=1`}
+          className="group/btn mt-5 flex items-center gap-2 text-sm font-semibold text-rose-500"
+        >
           <span className="relative">
             Shop Collection
-            {/* Animated underline */}
             <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-rose-500 transition-all duration-300 group-hover/btn:w-full"></span>
           </span>
+
           <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
             →
           </span>
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -20,17 +20,20 @@ export const CuratedCollections = [
     title: 'Indoor Plants',
     description: 'Perfect for your home and cozy spaces',
     image: '/CuratedCollections/indoor.png',
+    href: '/',
   },
   {
     id: 'beginner',
     title: 'Beginner Friendly',
     description: 'Start your plant journey with ease',
     image: '/CuratedCollections/outdoor.png',
+    href: '/',
   },
   {
     id: 'low-maintenance',
     title: 'Low Maintenance',
     description: 'Minimal care, maximum green',
     image: '/CuratedCollections/friendly.png',
+    href: '/',
   },
 ] as const;

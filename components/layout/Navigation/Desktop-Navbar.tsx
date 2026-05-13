@@ -13,7 +13,11 @@ import {
 } from '@kinde-oss/kinde-auth-nextjs';
 import { usePathname } from 'next/navigation';
 
-export default function DesktopNavbar() {
+interface DesktopNavbarProps {
+  totalItems: number;
+}
+
+export default function DesktopNavbar({ totalItems }: DesktopNavbarProps) {
   const { user } = useKindeBrowserClient(); // add signIn & signOut
   const pathname = usePathname();
   const isActive = pathname === '/Cart';
@@ -63,13 +67,15 @@ export default function DesktopNavbar() {
           <div className="flex items-center gap-6">
             <Link
               href="/Cart"
-              className={`rounded-full p-2 text-center font-medium transition-all duration-300 ${
-                isActive
-                  ? 'scale-105 bg-pink-700 text-white'
-                  : 'hover:text-pink-400'
-              }`}
+              className="relative rounded-full p-2 transition-all hover:text-pink-400"
             >
               <ShoppingCart size={20} />
+
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-green-700 text-xs text-white">
+                  {totalItems}
+                </span>
+              )}
             </Link>
 
             <Link href="/profile">

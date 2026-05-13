@@ -70,14 +70,46 @@ export async function getCart() {
       },
     });
 
+    const items = cart?.items ?? [];
+
+    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
     return {
       success: true,
-      items: cart?.items ?? [],
+      items,
+      totalItems,
     };
   } catch (error) {
     console.error(error);
-    return { success: false, error: 'Failed to fetch cart', items: [] };
+    return {
+      success: false,
+      items: [],
+      totalItems: 0,
+      error: 'Failed to fetch cart',
+    };
   }
+}
+
+// GET CART COUNT (for Navbar badge)
+export async function getCartCount() {
+  const user = await syncUser();
+  if (!user) return { totalItems: 0 };
+
+  const cart = await prisma.cart.findUnique({
+    where: { userId: user.id },
+    select: {
+      items: {
+        select: {
+          quantity: true,
+        },
+      },
+    },
+  });
+
+  const totalItems =
+    cart?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+
+  return { totalItems };
 }
 
 // INCREASE QTY
@@ -85,14 +117,62 @@ export async function increaseQuantity(productId: string) {
   const user = await syncUser();
   if (!user) throw new Error('Unauthorized');
 
-  try {
-    await prisma.$transaction(async (tx) => {
-      const cart = await tx.cart.findUnique({
-        where: { userId: user.id },
+  await prisma.$transaction(async (tx) => {
+    const cart = await tx.cart.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (!cart) return;
+
+    await tx.cartItem.update({
+      where: {
+        cartId_productId: {
+          cartId: cart.id,
+          productId,
+        },
+      },
+      data: {
+        quantity: { increment: 1 },
+      },
+    });
+  });
+
+  revalidatePath('/cart');
+}
+
+// DECREASE QTY
+export async function decreaseQuantity(productId: string) {
+  const user = await syncUser();
+  if (!user) throw new Error('Unauthorized');
+
+  await prisma.$transaction(async (tx) => {
+    const cart = await tx.cart.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (!cart) return;
+
+    const item = await tx.cartItem.findUnique({
+      where: {
+        cartId_productId: {
+          cartId: cart.id,
+          productId,
+        },
+      },
+    });
+
+    if (!item) return;
+
+    if (item.quantity <= 1) {
+      await tx.cartItem.delete({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId,
+          },
+        },
       });
-
-      if (!cart) return;
-
+    } else {
       await tx.cartItem.update({
         where: {
           cartId_productId: {
@@ -101,69 +181,13 @@ export async function increaseQuantity(productId: string) {
           },
         },
         data: {
-          quantity: { increment: 1 },
+          quantity: { decrement: 1 },
         },
       });
-    });
+    }
+  });
 
-    revalidatePath('/cart');
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// DECREASE QTY
-export async function decreaseQuantity(productId: string) {
-  const user = await syncUser();
-  if (!user) throw new Error('Unauthorized');
-
-  try {
-    await prisma.$transaction(async (tx) => {
-      const cart = await tx.cart.findUnique({
-        where: { userId: user.id },
-      });
-
-      if (!cart) return;
-
-      const item = await tx.cartItem.findUnique({
-        where: {
-          cartId_productId: {
-            cartId: cart.id,
-            productId,
-          },
-        },
-      });
-
-      if (!item) return;
-
-      if (item.quantity <= 1) {
-        await tx.cartItem.delete({
-          where: {
-            cartId_productId: {
-              cartId: cart.id,
-              productId,
-            },
-          },
-        });
-      } else {
-        await tx.cartItem.update({
-          where: {
-            cartId_productId: {
-              cartId: cart.id,
-              productId,
-            },
-          },
-          data: {
-            quantity: { decrement: 1 },
-          },
-        });
-      }
-    });
-
-    revalidatePath('/cart');
-  } catch (error) {
-    console.error(error);
-  }
+  revalidatePath('/cart');
 }
 
 // REMOVE ITEM
